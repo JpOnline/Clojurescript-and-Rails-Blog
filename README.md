@@ -24,10 +24,13 @@ Sendo assim ele precisa de um formulário onde ele pode preencher o título e o 
 O blogueiro deve conseguir fazer posts em markdown.
 
 #### Critério de aceitação:
-DADO QUE eu sou um blogueiro
-QUANDO eu acesso a página para criar uma postagem
-E crio uma postagem no formato markdown
-ENTÃO eu devo ter um link para o post final no formato html
+_DADO QUE_ eu sou um blogueiro
+
+_QUANDO_ eu acesso a página para criar uma postagem
+
+_E_ crio uma postagem no formato markdown
+
+_ENTÃO_ eu devo ter um link para o post final no formato html
 
 #### O que é esperado:
 - Implementar um background job (processador de trabalhos assincronos), para fazer a conversão de markdown para html.
