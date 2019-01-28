@@ -6,12 +6,13 @@ Este teste é apresentado às pessoas que estão se candidatando às vagas de de
 
 #### Como enviar seu teste
 
-* Faça um fork deste repositório
-* Abra um Pull Request
+* Faça um fork deste repositório.
+* Abra um Pull Request.
+* Na descrição do PR, coloque tudo que ache válido sobre o trabalho que fez, o que pensou em determinado momento ao tentar resolver o desafio, qualquer coisa que ache válido pra nós.
 
 ## O Desafio
 
-Seu cliente é um blogueiro aficionado por tecnologia que tinha um blog muito visitado porém, este blog foi hackeado e o ~~código fonte foi apagado~~.
+Seu cliente é um blogueiro aficionado por tecnologia que tinha um blog muito visitado, porém, este blog foi hackeado e o ~~código fonte foi apagado~~.
 
 
 Para o ressurgimento deste blog, este blogueiro teve a grande idéia de fazer todos os seus posts utilizando o formato [Markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet).
