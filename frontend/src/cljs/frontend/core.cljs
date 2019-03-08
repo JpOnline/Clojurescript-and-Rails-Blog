@@ -5,7 +5,8 @@
     [frontend.events :as events]
     [frontend.views :as views]
     [frontend.config :as config]
-    [frontend.server-talk.core :as server-talk]))
+    [frontend.server-talk.core :as server-talk]
+    [frontend.events-tests]))
 
 (defn dev-setup []
   (when config/debug?
