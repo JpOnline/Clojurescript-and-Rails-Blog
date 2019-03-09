@@ -17,7 +17,7 @@
 
 (defn app-initialized-handler []
   (-> db/default-db
-      (assoc-in [:ui :loading] true)))
+      (assoc-in [:ui :loading?] true)))
 
 (declare server-answered-all-posts-handler)
 
@@ -31,4 +31,4 @@
 (defn server-answered-all-posts-handler [db posts]
   (-> db
       (assoc-in [:domain :posts] posts)
-      (assoc-in [:ui :loading] false)))
+      (assoc-in [:ui :loading?] false)))

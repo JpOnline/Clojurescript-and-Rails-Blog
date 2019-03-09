@@ -15,6 +15,6 @@
     (get-in db [:domain :posts])))
 
 (re-frame/reg-sub
-  ::loading
+  ::loading?
   (fn [db]
-    (get-in db [:ui :loading])))
+    (get-in db [:ui :loading?])))
