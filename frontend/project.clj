@@ -22,7 +22,8 @@
   {:dev
    {:dependencies [[binaryage/devtools "0.9.10"]
                    [day8.re-frame/re-frame-10x "0.3.3"]
-                   [day8.re-frame/tracing "0.5.1"]]
+                   [day8.re-frame/tracing "0.5.1"]
+                   [fsmviz "0.1.3"]]
 
     :plugins      [[lein-figwheel "0.5.16"]]}
    :prod { :dependencies [[day8.re-frame/tracing-stubs "0.5.1"]]}}
@@ -53,7 +54,7 @@
     {:id "devcards"
      :source-paths ["src"]
      :figwheel {:devcards true }
-     :compiler {:main       "frontend.core"
+     :compiler {:main       "frontend.events-tests"
                 :asset-path "js/compiled/devcards_out"
                 :output-to  "resources/public/js/compiled/devcards.js"
                 :output-dir "resources/public/js/compiled/devcards_out"
