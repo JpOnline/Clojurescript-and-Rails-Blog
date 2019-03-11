@@ -5,7 +5,7 @@
     [frontend.events :as events]
     [frontend.views-prototypes]))
 
-(deftest events-tests
+#_(deftest events-tests
   "We are using a **humble view** strategy to test the user interface. The
   components do not process data, do not change the state of the app. Everything
   that happens in the app, triggers an **event** that produces a new app-state."

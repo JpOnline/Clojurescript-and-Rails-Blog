@@ -6,6 +6,7 @@
                  [devcards "0.2.6"]
                  [cljsjs/material-ui "3.9.1-0"]
                  [cljsjs/material-ui-icons "3.0.1-0"]
+                 [markdown-clj "1.0.7"]
                  [cljs-http "0.1.46"]]
 
   :plugins [[lein-cljsbuild "1.1.7"]]
@@ -25,7 +26,7 @@
                    [day8.re-frame/tracing "0.5.1"]
                    [fsmviz "0.1.3"]]
 
-    :plugins      [[lein-figwheel "0.5.16"]]}
+    :plugins      [[lein-figwheel "0.5.18"]]}
    :prod { :dependencies [[day8.re-frame/tracing-stubs "0.5.1"]]}}
 
   :cljsbuild
@@ -58,4 +59,4 @@
                 :asset-path "js/compiled/devcards_out"
                 :output-to  "resources/public/js/compiled/devcards.js"
                 :output-dir "resources/public/js/compiled/devcards_out"
-                :source-map-timestamp true }}]})
+                :source-map-timestamp true}}]})

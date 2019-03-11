@@ -6,7 +6,10 @@
     [material-ui-icons :as material-icons]
     [frontend.views :as v]
     [fsmviz.core :as viz-state-machine]
-    [frontend.db :as db]))
+    [frontend.db :as db]
+    
+    [markdown.core :refer [md->html]]
+    ))
 
 (defonce devcards-hidden (reagent/atom []))
 
@@ -37,7 +40,7 @@
 
 (declare card-container)
 
-(defcard-rg f*
+(defcard-rg initial-state
   (fn [devcard-data _]
     [card-container
      @devcard-data
@@ -67,6 +70,40 @@
        {:actions [{:name "Novo Post"}]
        :open? true}]]])
   (reagent/atom true))
+
+(defn editing-post-view [{:keys [post]}]
+  [:<>
+   [:> material/Input
+    {:style #js {:width "100%"
+                 ;; :lineHeight "24px"
+                 :padding "0 8px"
+                 :border "1px solid #00000038"
+                 :color "inherit"}
+     :value @(post :content)
+     :onChange #(reset! (post :content) (-> % .-target .-value))
+     :multiline true
+     }]
+   [:div
+    {:style #js {:overflow "auto"}
+     :dangerouslySetInnerHTML
+     #js {:__html (md->html @(post :content))}}]]
+  )
+
+(defcard-rg editing-post
+  (fn [devcard-data _]
+    [card-container
+     @devcard-data
+     [v/app-view
+      [v/top-bar
+       {:title "Blog"}]
+      [v/main-view
+       [editing-post-view
+        {:post {:id 1 :title "A test post" :content (:content @devcard-data)}
+         :loading? true}]]
+      [v/actions-menu
+       {:actions [{:name "Novo Post"}]
+       :open? true}]]])
+  {:hidden? (reagent/atom true) :content (reagent/atom "# Content")})
 
 (defcard initial-state-machine-doc
   (str "## Máquinas de Estado Finito
