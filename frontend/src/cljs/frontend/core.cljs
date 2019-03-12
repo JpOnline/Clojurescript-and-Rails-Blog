@@ -3,7 +3,7 @@
     [reagent.core :as reagent]
     [re-frame.core :as re-frame]
     [frontend.events :as events]
-    [frontend.views :as views]
+    [frontend.views.app-views :as app-views]
     [frontend.config :as config]
     [frontend.server-talk.core :as server-talk]))
 
@@ -14,7 +14,7 @@
 
 (defn mount-root []
   (re-frame/clear-subscription-cache!)
-  (reagent/render [views/app]
+  (reagent/render [app-views/app]
                   (.getElementById js/document "app")))
 
 (defn ^:export init []

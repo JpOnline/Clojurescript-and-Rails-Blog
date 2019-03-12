@@ -32,3 +32,32 @@
   (-> db
       (assoc-in [:domain :posts] posts)
       (assoc-in [:ui :loading?] false)))
+
+(defn-traced toggled-actions-handler [db]
+  (update-in db [:ui :actions-open?] not))
+(re-frame/reg-event-db
+  ::toggled-actions
+  toggled-actions-handler)
+
+(defn get-post-index [db id]
+  (first (keep-indexed #(when (= id (:id %2)) %1) (get-in db [:domain :posts]))))
+
+(defn-traced post-content-changed-handler [db [_ id new-content]]
+  (assoc-in db [:domain :posts (get-post-index db id) :content] new-content))
+(re-frame/reg-event-db
+  ::post-content-changed
+  post-content-changed-handler)
+
+(defn current->next-state
+  [state-machine current-state transition]
+  (get-in state-machine [current-state transition]))
+
+(defn-traced next-state
+  [db [event]]
+  (if-let [new-state (current->next-state db/initial-state-machine
+                                          (get-in db [:ui :state])
+                                          event)]
+    (assoc-in db [:ui :state] new-state)
+    db))
+
+(re-frame/reg-event-db :post-created next-state)

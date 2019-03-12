@@ -4,12 +4,10 @@
     [devcards.core :as devcards :refer-macros [defcard deftest defcard-rg]]
     [material-ui :as material]
     [material-ui-icons :as material-icons]
-    [frontend.views :as v]
+    [frontend.views.app-views :as app-views]
+    [frontend.views.content-views :as content-views]
     [fsmviz.core :as viz-state-machine]
-    [frontend.db :as db]
-    
-    [markdown.core :refer [md->html]]
-    ))
+    [frontend.db :as db]))
 
 (defonce devcards-hidden (reagent/atom []))
 
@@ -44,63 +42,46 @@
   (fn [devcard-data _]
     [card-container
      @devcard-data
-     [v/app-view
-      [v/top-bar
+     [app-views/app-view
+      [app-views/top-bar
        @devcard-data]
-      [v/main-view
-       [v/posts-view
+      [app-views/main-view
+       [content-views/posts-view
         @devcard-data]]]])
   {:hidden? (reagent/atom true)
    :title "Blog"
-   :posts [{:id 1 :title "A test post" :content "# Content"}]
+   :posts [{:id 1 :title "A test post 1" :content "# Content"}]
    :loading? false})
 
 (defcard-rg loading
   (fn [hidden? _]
     [card-container
      {:hidden? hidden?}
-     [v/app-view
-      [v/top-bar
+     [app-views/app-view
+      [app-views/top-bar
        {:title "Blog"}]
-      [v/main-view
-       [v/posts-view
-        {:posts [{:id 1 :title "A test post" :content "# Content"}]
+      [app-views/main-view
+       [content-views/posts-view
+        {:posts [{:id 1 :title "A test post 2" :content "# Content"}]
          :loading? true}]]
-      [v/actions-menu
+      [app-views/actions-menu
        {:actions [{:name "Novo Post"}]
        :open? true}]]])
   (reagent/atom true))
-
-(defn editing-post-view [{:keys [post]}]
-  [:<>
-   [:> material/Input
-    {:style #js {:width "100%"
-                 ;; :lineHeight "24px"
-                 :padding "0 8px"
-                 :border "1px solid #00000038"
-                 :color "inherit"}
-     :value @(post :content)
-     :onChange #(reset! (post :content) (-> % .-target .-value))
-     :multiline true
-     }]
-   [:div
-    {:style #js {:overflow "auto"}
-     :dangerouslySetInnerHTML
-     #js {:__html (md->html @(post :content))}}]]
-  )
 
 (defcard-rg editing-post
   (fn [devcard-data _]
     [card-container
      @devcard-data
-     [v/app-view
-      [v/top-bar
+     [app-views/app-view
+      [app-views/top-bar
        {:title "Blog"}]
-      [v/main-view
-       [editing-post-view
-        {:post {:id 1 :title "A test post" :content (:content @devcard-data)}
-         :loading? true}]]
-      [v/actions-menu
+      [app-views/main-view
+       [content-views/editing-post-view
+        {:post {:id 1 :title "A test post 3" :content @(:content @devcard-data)}
+         :loading? true
+         :onchange-fn #(reset! (:content @devcard-data) (-> % .-target .-value))}]]
+      [app-views/actions-menu
        {:actions [{:name "Novo Post"}]
        :open? true}]]])
   {:hidden? (reagent/atom true) :content (reagent/atom "# Content")})
@@ -116,7 +97,7 @@
   - [Restate your ui using state machines and re-frame](http://blog.cognitect.com/blog/2017/8/14/restate-your-ui-creating-a-user-interface-with-re-frame-and-state-machines)")
   {}
   {:frame false
-   :heading false })
+   :heading false})
 
 (defonce initial-state-machine
   (viz-state-machine/generate-image

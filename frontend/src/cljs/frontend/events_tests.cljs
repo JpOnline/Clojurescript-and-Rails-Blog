@@ -5,10 +5,17 @@
     [frontend.events :as events]
     [frontend.views-prototypes]))
 
-#_(deftest events-tests
-  "We are using a **humble view** strategy to test the user interface. The
+(defcard initial-state-machine-doc
+  (str "# Tests
+
+       We are using a **humble view** strategy to test the user interface. The
   components do not process data, do not change the state of the app. Everything
-  that happens in the app, triggers an **event** that produces a new app-state."
+  that happens in the app, triggers an **event** that produces a new app-state.")
+  {}
+  {:frame false
+   :heading false})
+
+(deftest initialized-event
   (testing "When app is initialized,"
     (is (= (events/app-initialized-handler)
            {:name "Blog"
@@ -33,3 +40,27 @@
       (is (= {:loading? false}
              (:ui (events/server-answered-all-posts-handler db posts)))
           "it should unset the loading flag."))))
+
+(deftest toogle-actions-menu
+  (testing "When actions menu is closed and it's pressed"
+    (is (= {:ui {:actions-open? true}}
+           (events/toggled-actions-handler {:ui {:actions-open? false}}))
+        "It should set its state to open")))
+
+(deftest post-content-changed
+  (testing "When post content is changed"
+    (let [db {:domain {:posts [{:id 1 :title "Life answer" :content "41"}]}}]
+      (is (= {:id 1 :title "Life answer" :content "42"}
+             (get-in (events/post-content-changed-handler
+                       db
+                       [:post-content-changed 1 "42"])
+                     [:domain :posts 0]))))))
+
+(deftest change-state
+  (testing "When an state change event is triggered"
+    (let [db {:ui {:state :initial}}]
+      (is (= :editing_post
+             (get-in
+               (events/next-state db [:post-created])
+               [:ui :state]))
+          "It should transit to the next state"))))
