@@ -25,7 +25,6 @@
                    [day8.re-frame/re-frame-10x "0.3.3"]
                    [day8.re-frame/tracing "0.5.1"]
                    [fsmviz "0.1.3"]]
-                   [com.taoensso/timbre "4.10.0"]
 
     :plugins      [[lein-figwheel "0.5.18"]]}
    :prod { :dependencies [[day8.re-frame/tracing-stubs "0.5.1"]]}}

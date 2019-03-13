@@ -17,3 +17,16 @@
           #(re-frame/dispatch
              [callback-event (:body response)])
           5000))))
+
+(defn create-post
+  "It sends an http POST request to the server to create a post,
+  it dispatches an event with the server response when it arrives."
+  [post post-index callback-event]
+  (go (let [response (<! (http/post "http://localhost:3000/posts"
+                                   {:with-credentials? false
+                                    :json-params post}))]
+        ;; Delay the response to simulate a real server
+        (js/setTimeout
+          #(re-frame/dispatch
+             [callback-event (:body response) post-index])
+          5000))))

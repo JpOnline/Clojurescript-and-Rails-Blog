@@ -1,6 +1,7 @@
 (ns frontend.subs
   (:require
-   [re-frame.core :as re-frame]))
+    [re-frame.core :as re-frame]
+    [frontend.events :as events]))
 
 ;; Please, be aware that db in re-frame's context means the state of the app.
 
@@ -28,8 +29,32 @@
   [state]
   (case state
     :initial [{:name "Novo Post" :event :post-created}]
-    [{:name "Sem ações pra esse estado"}]))
+    :editing_post [{:name "Excluir Post" :event :deleted-post} {:name "Voltar" :event :went-back}]
+    :post_detail [{:name "Editar" :event :editing-post} {:name "Excluir Post" :event :deleted-post} {:name "Voltar" :event :went-back}]
+    []))
 (re-frame/reg-sub
   ::actions
   :<- [::state]
   actions)
+
+(defn return-arrow?
+  [state]
+  (case state
+    :initial false
+    :post_detail true
+    :editing_post true
+    false))
+(re-frame/reg-sub
+  ::return-arrow?
+  :<- [::state]
+  return-arrow?)
+
+(re-frame/reg-sub
+  ::selected-post-id
+  (fn [db] (get-in db [:ui :selected-post-id])))
+
+(re-frame/reg-sub
+  ::selected-post
+  :<- [::selected-post-id]
+  :<- [::posts]
+  (fn [[id posts]] (first (keep #(when (= id (:id %)) %) posts))))

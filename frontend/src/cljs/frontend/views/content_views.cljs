@@ -5,21 +5,23 @@
     [material-ui-icons :as material-icons]
     [frontend.subs :as subs]
     [markdown.core :refer [md->html]]
-    [frontend.events :as events]
-    ))
+    [frontend.events :as events]))
 
 (declare posts-view)
+(declare post-view-mode)
 (declare editing-post-view)
 
 (defn content-view []
   (let [state (re-frame/subscribe [::subs/state])
         loading? (re-frame/subscribe [::subs/loading?])
+        selected-post (re-frame/subscribe [::subs/selected-post])
         posts (re-frame/subscribe [::subs/posts])]
     (case @state
       :initial [posts-view
                 {:posts @posts
                  :loading? @loading?}]
-      :editing_post [editing-post-view {:post (first @posts)}]
+      :post_detail [post-view-mode {:post @selected-post}]
+      :editing_post [editing-post-view {:post @selected-post}]
       [:h2 "no matching"])))
 
 (declare posts-list)
@@ -38,7 +40,8 @@
     :style #js {:width "100%" :maxWidth 360}}
    (map #(with-meta
            [:> material/ListItem
-            {:button true}
+            {:button true
+             :onClick (fn [e] (re-frame/dispatch [:clicked-post (:id %)]))}
             [:> material/ListItemText
              {:primary (:title %)}]]
            {:key (:id %)})
@@ -50,20 +53,42 @@
 (defn no-post []
   [:h3 {:style #js {:textAlign "center" :color "gray"}} "Nenhum post :("])
 
-(defn editing-post-view [{:keys [post onchange-fn]}]
-  (let [default-onchange-fn #(re-frame/dispatch [::events/post-content-changed
-                                                 1
-                                                 (-> % .-target .-value)])]
+(defn post-view-mode [{:keys [post]}]
+  [:<>
+   [:h1 (post :title)]
+   [:h3 {:style #js {:color "gray"}} (post :updated_at)]
+   [:div
+   {:style #js {:overflow "auto"}
+    :dangerouslySetInnerHTML
+    #js {:__html (md->html (post :content))}}]])
+
+(defn editing-post-view
+  [{:keys [post selected-post-id opt-on-title-change-fn opt-on-content-change-fn]}]
+  (let [on-content-change-fn (or opt-on-content-change-fn
+                                 #(re-frame/dispatch
+                                    [::events/post-content-changed
+                                     (post :id)
+                                     (-> % .-target .-value)]))
+        on-title-change-fn (or opt-on-title-change-fn
+                                 #(re-frame/dispatch
+                                    [::events/post-title-changed
+                                     (post :id)
+                                     (-> % .-target .-value)]))]
     [:<>
      [:> material/Input
+      {:style #js {:width "95%"
+                   :padding "0 8px"
+                   :fontSize "2.125rem"
+                   :margin "10px 0"
+                   :color "inherit"}
+       :value (post :title)
+       :onChange on-title-change-fn
+       :multiline true}][:> material/Input
       {:style #js {:width "95%"
                    :padding "0 8px"
                    :border "1px solid #00000038"
                    :color "inherit"}
        :value (post :content)
-       :onChange (or onchange-fn default-onchange-fn)
+       :onChange on-content-change-fn
        :multiline true}]
-     [:div
-      {:style #js {:overflow "auto"}
-       :dangerouslySetInnerHTML
-       #js {:__html (md->html (post :content))}}]]))
+     [post-view-mode {:post post}]]))

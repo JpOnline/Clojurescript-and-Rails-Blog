@@ -14,6 +14,11 @@
 (def initial-state-machine
   {nil {:app-initialized :initial}
    :initial {:post-created :editing_post
-             :clicked-post :editing_post}
+             :clicked-post :post_detail}
+   :post_detail {:went-back :initial
+                 :editing-post :editing_post
+                 :deleted-post :delete_post_confirmation}
    :editing_post {:went-back :initial
-                  :deleted-post :initial}})
+                  :deleted-post :delete_post_confirmation}
+   :delete_post_confirmation {:yes :initial
+                              :no :post_detail}})

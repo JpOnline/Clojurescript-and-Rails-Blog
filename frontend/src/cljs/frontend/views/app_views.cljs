@@ -7,8 +7,7 @@
     [material-ui-icons :as material-icons]
     [frontend.subs :as subs]
     [frontend.events :as events]
-    [frontend.views.content-views :as content-views]
-    ))
+    [frontend.views.content-views :as content-views]))
 
 (declare app-view)
 (declare top-bar)
@@ -18,21 +17,31 @@
 (defn app []
   (let [top-bar-title (re-frame/subscribe [::subs/name])
         actions (re-frame/subscribe [::subs/actions])
-        actions-open? (re-frame/subscribe [::subs/actions-open?])]
+        actions-open? (re-frame/subscribe [::subs/actions-open?])
+        return-arrow? (re-frame/subscribe [::subs/return-arrow?])]
     [app-view
      [top-bar
-      {:title @top-bar-title}]
+      {:title @top-bar-title
+       :return-arrow? @return-arrow?}]
      [main-view
       [content-views/content-view]]
      [actions-menu
       {:actions @actions
        :open? @actions-open?}]]))
 
-(defn top-bar [{:keys [title]} & children]
+(defn top-bar [{:keys [title return-arrow?]} & children]
   [:> material/AppBar
    {:position "static"
     :color "primary"}
    [:> material/Toolbar
+    (if return-arrow?
+      [:> material/IconButton
+       {:color "inherit"
+        :onClick #(re-frame/dispatch [:went-back])
+        :style #js {:marginLeft -12 :marginRight 20}}
+       [:> material-icons/ArrowBack]]
+      [:div.arrow-back-placeholder
+       {:style #js {:width "56px"}}])
     [:> material/Typography
      {:variant "h6"
       :color "inherit"}

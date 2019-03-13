@@ -7,6 +7,7 @@
     [frontend.views.app-views :as app-views]
     [frontend.views.content-views :as content-views]
     [fsmviz.core :as viz-state-machine]
+    [frontend.subs :as subs]
     [frontend.db :as db]))
 
 (defonce devcards-hidden (reagent/atom []))
@@ -69,32 +70,54 @@
        :open? true}]]])
   (reagent/atom true))
 
-(defcard-rg editing-post
+(defcard-rg editing-post*
   (fn [devcard-data _]
     [card-container
      @devcard-data
      [app-views/app-view
       [app-views/top-bar
-       {:title "Blog"}]
+       {:title "Blog"
+        :return-arrow? true}]
       [app-views/main-view
        [content-views/editing-post-view
-        {:post {:id 1 :title "A test post 3" :content @(:content @devcard-data)}
-         :loading? true
-         :onchange-fn #(reset! (:content @devcard-data) (-> % .-target .-value))}]]
+        {:post {:id 1 :title @(:title @devcard-data) :content @(:content @devcard-data) :updated_at "2019-06-01T20:06:21.353Z"}
+         :opt-on-title-change-fn #(reset! (:title @devcard-data) (-> % .-target .-value))
+         :opt-on-content-change-fn #(reset! (:content @devcard-data) (-> % .-target .-value))}]]
       [app-views/actions-menu
        {:actions [{:name "Novo Post"}]
        :open? true}]]])
+  {:hidden? (reagent/atom true)
+   :content (reagent/atom "# Content")
+   :title (reagent/atom "A test post")})
+
+(defcard-rg reading-post
+  (fn [devcard-data _]
+    (let [ui-state :post_detail]
+      [card-container
+       @devcard-data
+       [app-views/app-view
+        [app-views/top-bar
+         {:title "Blog"
+          :return-arrow? (subs/return-arrow? ui-state)}]
+        [app-views/main-view
+         [content-views/post-view-mode
+          {:post {:id 1
+                  :title "A test post 4"
+                  :content @(:content @devcard-data)}}]]
+        [app-views/actions-menu
+         {:actions (subs/actions ui-state)
+          :open? true}]]]))
   {:hidden? (reagent/atom true) :content (reagent/atom "# Content")})
 
 (defcard initial-state-machine-doc
   (str "## Máquinas de Estado Finito
 
-  Definir máquinas de estado ajuda a manter a consistência do estado de diferentes
-  componentes quando mais de um componente é atualizado num evento. A ideia veio
-  do Jeb Beich e é descrita em 2 posts dele.
+       Definir máquinas de estado ajuda a manter a consistência do estado de diferentes
+       componentes quando mais de um componente é atualizado num evento. A ideia veio
+       do Jeb Beich e é descrita em 2 posts dele.
 
-  - [Restate your ui using state machines](http://blog.cognitect.com/blog/2017/5/22/restate-your-ui-using-state-machines-to-simplify-user-interface-development)
-  - [Restate your ui using state machines and re-frame](http://blog.cognitect.com/blog/2017/8/14/restate-your-ui-creating-a-user-interface-with-re-frame-and-state-machines)")
+       - [Restate your ui using state machines](http://blog.cognitect.com/blog/2017/5/22/restate-your-ui-using-state-machines-to-simplify-user-interface-development)
+       - [Restate your ui using state machines and re-frame](http://blog.cognitect.com/blog/2017/8/14/restate-your-ui-creating-a-user-interface-with-re-frame-and-state-machines)")
   {}
   {:frame false
    :heading false})
