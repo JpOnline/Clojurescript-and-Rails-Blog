@@ -15,7 +15,7 @@
 (declare actions-menu)
 
 (defn app []
-  (let [top-bar-title (re-frame/subscribe [::subs/name])
+  (let [top-bar-title (re-frame/subscribe [::subs/top-bar-title])
         actions (re-frame/subscribe [::subs/actions])
         actions-open? (re-frame/subscribe [::subs/actions-open?])
         loading? (re-frame/subscribe [::subs/loading?])

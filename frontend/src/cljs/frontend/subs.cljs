@@ -29,8 +29,8 @@
   [state]
   (case state
     :initial [{:name "Novo Post" :event :post-created}]
-    :editing_post [{:name "Excluir Post" :event :clicked-delete-post}
-                   {:name "Voltar" :event :went-back}]
+    :editing_post [{:name "Ok" :event :ok}
+                   {:name "Excluir Post" :event :clicked-delete-post}]
     :post_detail [{:name "Editar" :event :editing-post}
                   {:name "Excluir Post" :event :clicked-delete-post}
                   {:name "Voltar" :event :went-back}]
@@ -62,5 +62,19 @@
   :<- [::selected-post-index]
   :<- [::posts]
   (fn [[index posts]]
-    (.log js/console "subs posts index" posts index)
-    (nth posts index)))
+    (nth posts (or index 0) {})))
+
+(defn top-bar-title
+  [[state selected-post]]
+  (case state
+    :initial "Blog da SmartFit"
+    :post_detail (selected-post :title)
+    :editing_post (selected-post :title)
+    :delete_post_confirmation "Tem Certeza?"
+    "??"))
+(re-frame/reg-sub
+  ::top-bar-title
+  :<- [::state]
+  :<- [::selected-post]
+  top-bar-title)
+

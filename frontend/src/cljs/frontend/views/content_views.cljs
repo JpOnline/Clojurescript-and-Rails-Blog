@@ -39,7 +39,7 @@
 (defn posts-list [{:keys [posts]}]
   [:> material/List
    {:component "nav"
-    :style #js {:width "100%" :maxWidth 360}}
+    :style #js {:width "100%" :maxWidth "100%"}}
    (map #(with-meta
            [:> material/ListItem
             {:button true
@@ -57,8 +57,12 @@
 
 (defn post-view-mode [{:keys [post]}]
   [:<>
-   [:h1 (post :title)]
-   [:h3 {:style #js {:color "gray"}} (post :updated_at)]
+   [:p {:style #js {:color "gray"}}
+    (str "Autor: "(post :submited_by))
+    [:br]
+    (let [date (re-find #"(\d+)-(\d+)-(\d+)T(\d+):(\d+)" (post :updated_at))
+          [_ year month day hour minute] date]
+      (str day "/" month "/" year " " hour ":" minute))]
    [:div
    {:style #js {:overflow "auto"}
     :dangerouslySetInnerHTML
@@ -93,6 +97,7 @@
        :value (post :content)
        :onChange on-content-change-fn
        :multiline true}]
+     [:br] [:br] [:br]
      [post-view-mode {:post post}]]))
 
 (declare confirmation-buttons)

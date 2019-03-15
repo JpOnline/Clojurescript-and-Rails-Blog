@@ -1,8 +1,7 @@
 (ns frontend.db)
 
 (def default-db
-  {:name "Blog"
-   :ui {:state :initial
+  {:ui {:state :initial
         :actions-open? false}})
 
 ;; Defining state machines will help to keep track of component states when
@@ -19,6 +18,7 @@
                  :editing-post :editing_post
                  :clicked-delete-post :delete_post_confirmation}
    :editing_post {:went-back :initial
+                  :ok :post_detail
                   :clicked-delete-post :delete_post_confirmation}
    :delete_post_confirmation {:deleted-post :initial
                               :cancel :post_detail}})
