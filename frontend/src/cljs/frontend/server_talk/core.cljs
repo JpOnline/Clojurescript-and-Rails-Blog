@@ -33,13 +33,15 @@
 
 (defn update-post
   "It sends an http PUT request to the server to update a post."
-  [post]
-  (http/put (str "http://localhost:3000/posts/" (:id post))
-            {:with-credentials? false
-             :json-params post}))
+  [post callback-event]
+  (go (let [response (<! (http/put (str "http://localhost:3000/posts/" (:id post))
+                                   {:with-credentials? false
+                                    :json-params post}))]
+        (re-frame/dispatch [callback-event]))))
 
 (defn delete-post
   "It sends an http DELETE request to the server to delete a post."
-  [post-id]
-  (http/delete (str "http://localhost:3000/posts/" post-id)
-            {:with-credentials? false}))
+  [post-id callback-event]
+  (go (let [response (<! (http/delete (str "http://localhost:3000/posts/" post-id)
+                                      {:with-credentials? false}))]
+        (re-frame/dispatch [callback-event]))))

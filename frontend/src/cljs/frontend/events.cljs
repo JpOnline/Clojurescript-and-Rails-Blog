@@ -28,10 +28,17 @@
     [db [_ posts]]
     (server-answered-all-posts-handler db posts)))
 
+(defn-traced clean-loading-handler [db]
+  (assoc-in db [:ui :loading?] false))
+
+(re-frame/reg-event-db
+  ::clean-loading-state
+  clean-loading-handler)
+
 (defn server-answered-all-posts-handler [db posts]
   (-> db
       (assoc-in [:domain :posts] posts)
-      (assoc-in [:ui :loading?] false)))
+      clean-loading-handler))
 
 (declare create-new-post-local)
 (declare create-new-post-on-server)
@@ -44,6 +51,8 @@
     (-> db
         create-new-post-local
         create-new-post-on-server
+        (assoc-in [:ui :selected-post-index]
+                  (-> (get-in db [:domain :posts]) count))
         (next-state ev))))
 
 (defn create-new-post-local [db]
@@ -55,13 +64,15 @@
       (last posts)
       (dec (count posts))
       ::post-created-on-server)
-    db))
+    (assoc-in db [:ui :loading?] true)))
 
 (re-frame/reg-event-db
   ::post-created-on-server
   (fn-traced
     [db [_ post post-index]]
-    (assoc-in db [:domain :posts post-index :id] (:id post))))
+    (-> db
+        (assoc-in [:domain :posts post-index :id] (:id post))
+        clean-loading-handler)))
 
 (defn get-post [db id]
   (first (keep #(when (= id (:id %)) %) (get-in db [:domain :posts]))) )
@@ -69,7 +80,7 @@
 (defn-traced send-update-to-server-handler
     [db [_ id]]
     (when-not (get-in db [:server :should-wait-to-update?])
-      (server-talk/update-post (get-post db id)))
+      (server-talk/update-post (get-post db id) ::clean-loading-state))
     db)
 (re-frame/reg-event-db
   ::send-update-to-server
@@ -98,15 +109,20 @@
 (defn get-post-index [db id]
   (first (keep-indexed #(when (= id (:id %2)) %1) (get-in db [:domain :posts]))))
 
-(defn-traced post-changed-handler
-  [db [event id payload]]
+(defn update-post-locally [db [event id payload]]
   (let [post-index (get-post-index db id)
         title-or-content ({::post-title-changed :title
                            ::post-content-changed :content} event)]
     (-> db
         (assoc-in [:domain :posts post-index title-or-content] payload)
-        (send-update-to-server-handler [event id])
-        (set-timeout-for-next-update id))))
+        (assoc-in [:ui :loading?] true))))
+
+(defn-traced post-changed-handler
+  [db [event id payload]]
+  (-> db
+      (update-post-locally [event id payload])
+      (send-update-to-server-handler [event id])
+      (set-timeout-for-next-update id)))
 
 (re-frame/reg-event-db
   ::post-title-changed
@@ -127,15 +143,16 @@
   :deleted-post
   (fn-traced
     [db [event id]]
-    (server-talk/delete-post id)
+    (server-talk/delete-post id ::clean-loading-state)
     (-> db
+        (assoc-in [:ui :loading?] true)
         (deleted-post-handler id)
         (next-state [event]))))
 
 (defn-traced clicked-post-handler
   [db [event post-id]]
   (-> db
-      (assoc-in [:ui :selected-post-id] post-id)
+      (assoc-in [:ui :selected-post-index] (get-post-index db post-id))
       (next-state [event])))
 
 (defn-traced toggled-actions-handler [db]

@@ -41,54 +41,79 @@
 
 (defcard-rg initial-state
   (fn [devcard-data _]
-    [card-container
-     @devcard-data
-     [app-views/app-view
-      [app-views/top-bar
-       @devcard-data]
-      [app-views/main-view
-       [content-views/posts-view
-        @devcard-data]]]])
-  {:hidden? (reagent/atom true)
-   :title "Blog"
-   :posts [{:id 1 :title "A test post 1" :content "# Content"}]
-   :loading? false})
+    (let [ui-state :initial]
+      [card-container
+       @devcard-data
+       [app-views/app-view
+        [app-views/top-bar
+         {:title "Blog"
+          :return-arrow? (subs/return-arrow? ui-state)}]
+        [app-views/main-view
+         [content-views/posts-view
+          {:posts [{:id 1
+                    :title "Título do post"
+                    :submited_by "jpsoares106@gmail.com"
+                    :content "## Conteúdo"
+                    :created_at "2018-12-06T20:16:23.423Z"
+                    :updated_at "2019-06-01T20:06:21.353Z"}]}]]
+        [app-views/actions-menu
+         {:actions (subs/actions ui-state)
+          :open? true}]]]))
+  {:hidden? (reagent/atom true)})
 
-(defcard-rg loading
-  (fn [hidden? _]
-    [card-container
-     {:hidden? hidden?}
-     [app-views/app-view
-      [app-views/top-bar
-       {:title "Blog"}]
-      [app-views/main-view
-       [content-views/posts-view
-        {:posts [{:id 1 :title "A test post 2" :content "# Content"}]
-         :loading? true}]]
-      [app-views/actions-menu
-       {:actions [{:name "Novo Post"}]
-       :open? true}]]])
-  (reagent/atom true))
+(defcard-rg initial-loading
+  (fn [devcard-data _]
+    (let [ui-state :initial]
+      [card-container
+       @devcard-data
+       [app-views/app-view
+        [app-views/top-bar
+         {:title "Blog"
+          :return-arrow? (subs/return-arrow? ui-state)
+          :loading? true}]
+        [app-views/main-view
+         [content-views/posts-view
+          {:loading? true
+           :posts [{:id 1
+                    :title "Título do post"
+                    :submited_by "jpsoares106@gmail.com"
+                    :content "## Conteúdo"
+                    :created_at "2018-12-06T20:16:23.423Z"
+                    :updated_at "2019-06-01T20:06:21.353Z"}]}]]
+        [app-views/actions-menu
+         {:actions (subs/actions ui-state)
+          :open? true}]]]))
+  {:hidden? (reagent/atom true)})
 
 (defcard-rg editing-post
   (fn [devcard-data _]
-    [card-container
-     @devcard-data
-     [app-views/app-view
-      [app-views/top-bar
-       {:title "Blog"
-        :return-arrow? true}]
-      [app-views/main-view
-       [content-views/editing-post-view
-        {:post {:id 1 :title @(:title @devcard-data) :content @(:content @devcard-data) :updated_at "2019-06-01T20:06:21.353Z"}
-         :opt-on-title-change-fn #(reset! (:title @devcard-data) (-> % .-target .-value))
-         :opt-on-content-change-fn #(reset! (:content @devcard-data) (-> % .-target .-value))}]]
-      [app-views/actions-menu
-       {:actions [{:name "Novo Post"}]
-       :open? true}]]])
+    (let [ui-state :editing_post]
+      [card-container
+       @devcard-data
+       [app-views/app-view
+        [app-views/top-bar
+         {:title "Blog"
+          :return-arrow? (subs/return-arrow? ui-state)}]
+        [app-views/main-view
+         [content-views/editing-post-view
+          {:post {:id 1
+                  :title @(:title @devcard-data)
+                  :submited_by "jpsoares106@gmail.com"
+                  :content @(:content @devcard-data)
+                  :created_at "2018-12-06T20:16:23.423Z"
+                  :updated_at "2019-06-01T20:06:21.353Z"}
+           :opt-on-title-change-fn #(reset!
+                                      (:title @devcard-data)
+                                      (-> % .-target .-value))
+           :opt-on-content-change-fn #(reset!
+                                        (:content @devcard-data)
+                                        (-> % .-target .-value))}]]
+        [app-views/actions-menu
+         {:actions (subs/actions ui-state)
+          :open? true}]]]))
   {:hidden? (reagent/atom true)
-   :content (reagent/atom "# Content")
-   :title (reagent/atom "A test post")})
+   :title (reagent/atom "Título do post")
+   :content (reagent/atom "## Conteúdo")})
 
 (defcard-rg reading-post
   (fn [devcard-data _]
@@ -102,12 +127,16 @@
         [app-views/main-view
          [content-views/post-view-mode
           {:post {:id 1
-                  :title "A test post 4"
-                  :content @(:content @devcard-data)}}]]
+                    :title "Título do post"
+                    :submited_by "jpsoares106@gmail.com"
+                    :content @(:content @devcard-data)
+                    :created_at "2018-12-06T20:16:23.423Z"
+                    :updated_at "2019-06-01T20:06:21.353Z"}}]]
         [app-views/actions-menu
          {:actions (subs/actions ui-state)
           :open? true}]]]))
-  {:hidden? (reagent/atom true) :content (reagent/atom "# Content")})
+  {:hidden? (reagent/atom true)
+   :content (reagent/atom "## Conteúdo")})
 
 (defcard-rg delete_post_confirmation
   (fn [devcard-data _]
@@ -120,10 +149,12 @@
           :return-arrow? (subs/return-arrow? ui-state)}]
         [app-views/main-view
          [content-views/confirm-delete-post
-          {:post
-           {:id 1
-            :title "Título do post"
-            :content "Conteúdo"}}]]
+          {:post {:id 1
+                  :title "Título do post"
+                  :submited_by "jpsoares106@gmail.com"
+                  :content "## Conteúdo"
+                  :created_at "2018-12-06T20:16:23.423Z"
+                  :updated_at "2019-06-01T20:06:21.353Z"}}]]
         [app-views/actions-menu
          {:actions (subs/actions ui-state)
           :open? true}]]]))

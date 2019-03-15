@@ -73,7 +73,7 @@
                                     :created_at "2019-03-06T20:06:21.353Z"}]}}
                         "(app-state) Given there's a submited post")]
       ;; System Under Test
-      (let [result (is (events/post-changed-handler
+      (let [result (is (events/update-post-locally
                          app-state
                          [::events/post-title-changed 2 "The ultimate answer"])
                        "(result) When title is changed")]
@@ -86,7 +86,7 @@
                 :updated_at "2019-03-14T18:50:45.033Z"
                 :created_at "2019-03-06T20:06:21.353Z"})
             "it should update post title."))
-      (let [result (is (events/post-changed-handler
+      (let [result (is (events/update-post-locally
                          app-state
                          [::events/post-content-changed 2 "42"])
                        "(result) When content is changed")]
@@ -137,13 +137,13 @@
                [:ui :state]))
           "It should transit to the initial state.")))
   (testing "Reading post"
-    (let [app-state (is {:ui {:state :initial}}
-                        "(app-state) When in initial state")
-          event (is [:clicked-post 3] "(event) and the post with id 3 is clicked")
+    (let [app-state (is {:ui {:state :initial}
+                         :domain {:posts [{:id 3 :title "Título"}]}}
+                        "(app-state) Given in initial state")
+          event (is [:clicked-post 3] "(event) when the post with id 3 is clicked")
           result (is (events/clicked-post-handler app-state event) "(result)")]
       (is (= :post_detail
              (get-in result [:ui :state]))
           "It should change ui state to post detail.")
-      (is (= 3
-             (get-in result [:ui :selected-post-id]))
+      (is (= 0 (get-in result [:ui :selected-post-index]))
           "It should set the selected post id to 3."))))

@@ -18,34 +18,44 @@
   (let [top-bar-title (re-frame/subscribe [::subs/name])
         actions (re-frame/subscribe [::subs/actions])
         actions-open? (re-frame/subscribe [::subs/actions-open?])
+        loading? (re-frame/subscribe [::subs/loading?])
         return-arrow? (re-frame/subscribe [::subs/return-arrow?])]
     [app-view
      [top-bar
       {:title @top-bar-title
-       :return-arrow? @return-arrow?}]
+       :return-arrow? @return-arrow?
+       :loading? @loading?}]
      [main-view
       [content-views/content-view]]
      [actions-menu
       {:actions @actions
        :open? @actions-open?}]]))
 
-(defn top-bar [{:keys [title return-arrow?]} & children]
+(defn top-bar [{:keys [title return-arrow? loading?]} & children]
   [:> material/AppBar
    {:position "static"
     :color "primary"}
    [:> material/Toolbar
-    (if return-arrow?
-      [:> material/IconButton
-       {:color "inherit"
-        :onClick #(re-frame/dispatch [:went-back])
-        :style #js {:marginLeft -12 :marginRight 20}}
-       [:> material-icons/ArrowBack]]
-      [:div.arrow-back-placeholder
-       {:style #js {:width "56px"}}])
-    [:> material/Typography
-     {:variant "h6"
-      :color "inherit"}
-     title]]
+    {:style #js {:alignItems "center"
+                 :justifyContent "space-between"}}
+    [:div.arrow-and-title
+     {:style #js {:display "flex"
+                  :alignItems "center"}}
+     (if return-arrow?
+       [:> material/IconButton
+        {:color "inherit"
+         :onClick #(re-frame/dispatch [:went-back])
+         :style #js {:marginLeft -12 :marginRight 20}}
+        [:> material-icons/ArrowBack]]
+       [:div.arrow-back-placeholder
+        {:style #js {:width "56px"}}])
+     [:> material/Typography
+      {:variant "h6"
+       :color "inherit"}
+      title]]
+    (when loading?
+      [:> material/CircularProgress
+       {:color "secondary"}])]
    (map-indexed #(with-meta %2 {:key %1}) children)])
 
 (def custom-theme

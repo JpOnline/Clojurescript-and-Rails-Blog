@@ -54,11 +54,13 @@
   return-arrow?)
 
 (re-frame/reg-sub
-  ::selected-post-id
-  (fn [db] (get-in db [:ui :selected-post-id])))
+  ::selected-post-index
+  (fn [db] (get-in db [:ui :selected-post-index])))
 
 (re-frame/reg-sub
   ::selected-post
-  :<- [::selected-post-id]
+  :<- [::selected-post-index]
   :<- [::posts]
-  (fn [[id posts]] (first (keep #(when (= id (:id %)) %) posts))))
+  (fn [[index posts]]
+    (.log js/console "subs posts index" posts index)
+    (nth posts index)))
