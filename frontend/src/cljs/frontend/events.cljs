@@ -116,6 +116,28 @@
   ::post-content-changed
   post-changed-handler)
 
+(defn deleted-post-handler [db id]
+  (let [index (get-post-index db id)
+        posts (get-in db [:domain :posts])
+        updated-posts (vec (concat (subvec posts 0 index)
+                                   (subvec posts (inc index))))]
+    (assoc-in db [:domain :posts] updated-posts)))
+
+(re-frame/reg-event-db
+  :deleted-post
+  (fn-traced
+    [db [event id]]
+    (server-talk/delete-post id)
+    (-> db
+        (deleted-post-handler id)
+        (next-state [event]))))
+
+(defn-traced clicked-post-handler
+  [db [event post-id]]
+  (-> db
+      (assoc-in [:ui :selected-post-id] post-id)
+      (next-state [event])))
+
 (defn-traced toggled-actions-handler [db]
   (update-in db [:ui :actions-open?] not))
 (re-frame/reg-event-db
@@ -134,12 +156,8 @@
     (assoc-in db [:ui :state] new-state)
     db))
 
-(defn-traced clicked-post-handler
-  [db [event post-id]]
-  (-> db
-      (assoc-in [:ui :selected-post-id] post-id)
-      (next-state [event])))
-
 (re-frame/reg-event-db :went-back next-state)
 (re-frame/reg-event-db :clicked-post clicked-post-handler)
 (re-frame/reg-event-db :editing-post next-state)
+(re-frame/reg-event-db :clicked-delete-post next-state)
+(re-frame/reg-event-db :cancel next-state)

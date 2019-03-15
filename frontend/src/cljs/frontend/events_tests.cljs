@@ -62,13 +62,61 @@
           "it should set its state to closed"))))
 
 (deftest post-content-changed
-  (testing "When post content is changed"
-    (let [db {:domain {:posts [{:id 1 :title "Life answer" :content "41"}]}}]
-      (is (= {:id 1 :title "Life answer" :content "42"}
-             (get-in (events/post-changed-handler
-                       ::post-content-changed
-                       [db 1 "42"])
-                     [:domain :posts 0]))))))
+  (testing "Updating post"
+    ;; Context
+    (let [app-state (is {:domain {:posts
+                                  [{:id 2
+                                    :title "Life answer"
+                                    :content "41",
+                                    :submited_by "jpsoares106@gmail.com",
+                                    :updated_at "2019-03-14T18:50:45.033Z"
+                                    :created_at "2019-03-06T20:06:21.353Z"}]}}
+                        "(app-state) Given there's a submited post")]
+      ;; System Under Test
+      (let [result (is (events/post-changed-handler
+                         app-state
+                         [::events/post-title-changed 2 "The ultimate answer"])
+                       "(result) When title is changed")]
+        ;; Asserting
+        (is (= (get-in result [:domain :posts 0])
+               {:id 2
+                :title "The ultimate answer"
+                :content "41",
+                :submited_by "jpsoares106@gmail.com",
+                :updated_at "2019-03-14T18:50:45.033Z"
+                :created_at "2019-03-06T20:06:21.353Z"})
+            "it should update post title."))
+      (let [result (is (events/post-changed-handler
+                         app-state
+                         [::events/post-content-changed 2 "42"])
+                       "(result) When content is changed")]
+        ;; Asserting
+        (is (= (get-in result [:domain :posts 0])
+               {:id 2
+                :title "Life answer"
+                :content "42",
+                :submited_by "jpsoares106@gmail.com",
+                :updated_at "2019-03-14T18:50:45.033Z"
+                :created_at "2019-03-06T20:06:21.353Z"})
+            "it should update post content")))))
+
+(deftest deleted-post
+  (testing "Deleting post"
+    ;; Arranging
+    (let [app-state (is {:domain {:posts
+                                  [{:id 2
+                                    :title "Título"
+                                    :content "Conteúdo",
+                                    :submited_by "jpsoares106@gmail.com",
+                                    :updated_at "2019-03-14T18:50:45.033Z"
+                                    :created_at "2019-03-06T20:06:21.353Z"}]}}
+                        "(app-state) When there's a post")
+          ;; System Under Test
+          result (is (events/deleted-post-handler app-state 2)
+                     "(result) and post of id 2 is deleted")]
+      ;; Asserting
+      (is (= (get-in result [:domain :posts]) [])
+          "post should no longer exist"))))
 
 (deftest change-state
   (testing "When state is initial and event is post-created"

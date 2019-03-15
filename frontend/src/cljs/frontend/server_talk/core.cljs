@@ -32,9 +32,14 @@
           5000))))
 
 (defn update-post
-  "It sends an http PUT request to the server to update a post,
-  it dispatches an event with the server response when it arrives."
+  "It sends an http PUT request to the server to update a post."
   [post]
   (http/put (str "http://localhost:3000/posts/" (:id post))
             {:with-credentials? false
              :json-params post}))
+
+(defn delete-post
+  "It sends an http DELETE request to the server to delete a post."
+  [post-id]
+  (http/delete (str "http://localhost:3000/posts/" post-id)
+            {:with-credentials? false}))

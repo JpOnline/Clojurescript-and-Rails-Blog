@@ -72,6 +72,24 @@ RSpec.describe 'Blog Posts API.', type: :request do
 
   end
 
+  # Test suite for DELETE /posts/:id
+  describe 'DELETE /posts/:id' do
+    let(:post_attributes) { { title: 'Título do Post',
+                              submited_by: 'jpsoares106@gmail.com',
+                              content: '# Lorem Ipsum' } }
+
+    context 'When there is a post in DB and DELETE /posts/1 is called' do
+      before { post '/posts', params: post_attributes }
+
+      it 'should retrieve no posts' do
+        delete '/posts/1'
+        get '/posts'
+
+        expect(json).to be_empty
+      end
+    end
+  end
+
   private
   def json
     JSON.parse(response.body)

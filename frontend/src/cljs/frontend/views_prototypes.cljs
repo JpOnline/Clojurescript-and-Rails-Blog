@@ -109,6 +109,26 @@
           :open? true}]]]))
   {:hidden? (reagent/atom true) :content (reagent/atom "# Content")})
 
+(defcard-rg delete_post_confirmation
+  (fn [devcard-data _]
+    (let [ui-state :delete_post_confirmation]
+      [card-container
+       @devcard-data
+       [app-views/app-view
+        [app-views/top-bar
+         {:title "Blog"
+          :return-arrow? (subs/return-arrow? ui-state)}]
+        [app-views/main-view
+         [content-views/confirm-delete-post
+          {:post
+           {:id 1
+            :title "Título do post"
+            :content "Conteúdo"}}]]
+        [app-views/actions-menu
+         {:actions (subs/actions ui-state)
+          :open? true}]]]))
+  {:hidden? (reagent/atom true)})
+
 (defcard initial-state-machine-doc
   (str "## Máquinas de Estado Finito
 

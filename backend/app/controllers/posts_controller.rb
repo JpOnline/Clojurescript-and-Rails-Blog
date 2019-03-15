@@ -19,6 +19,13 @@ class PostsController < ApplicationController
     head :no_content
   end
 
+  # DELETE /posts/:id
+  def destroy
+    @post = Post.find(params[:id])
+    @post.destroy
+    head :no_content
+  end
+
 
   private
 

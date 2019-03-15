@@ -29,8 +29,11 @@
   [state]
   (case state
     :initial [{:name "Novo Post" :event :post-created}]
-    :editing_post [{:name "Excluir Post" :event :deleted-post} {:name "Voltar" :event :went-back}]
-    :post_detail [{:name "Editar" :event :editing-post} {:name "Excluir Post" :event :deleted-post} {:name "Voltar" :event :went-back}]
+    :editing_post [{:name "Excluir Post" :event :clicked-delete-post}
+                   {:name "Voltar" :event :went-back}]
+    :post_detail [{:name "Editar" :event :editing-post}
+                  {:name "Excluir Post" :event :clicked-delete-post}
+                  {:name "Voltar" :event :went-back}]
     []))
 (re-frame/reg-sub
   ::actions
@@ -43,6 +46,7 @@
     :initial false
     :post_detail true
     :editing_post true
+    :delete_post_confirmation true
     false))
 (re-frame/reg-sub
   ::return-arrow?

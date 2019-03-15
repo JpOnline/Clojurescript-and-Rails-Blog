@@ -83,29 +83,29 @@
 
 (defn actions-menu [{:keys [open? actions]}]
   (let [this (reagent/current-component)]
-    [:> material/Fab
-     {:color "secondary"
-      :onClick #(re-frame/dispatch [::events/toggled-actions])
-      :style #js {:alignSelf "flex-end" :margin "15px"}}
-     [:> material-icons/MoreVert]
-     [:> material/Popper
-      {:open open?
-       :style #js {:zIndex 1100}
-       :anchorEl #(reagent/dom-node this)
-       :placement "top-start"
-       :modifiers #js {:offset #js {:offset "-80%p"}
-                       :flip #js {:enabled false}
-                       :preventOverflow #js {:enabled false}
-                       :hide #js {:enabled false}}}
-      [:> material/Paper
-       {:elevation 8
-        :style #js {:backgroundColor "#ffffffba"}}
-       [:> material/MenuList
-        (map (fn [action]
-               (with-meta
+    (when-not (empty? actions)
+      [:> material/Fab
+       {:color "secondary"
+        :onClick #(re-frame/dispatch [::events/toggled-actions])
+        :style #js {:alignSelf "flex-end" :margin "15px"}}
+       [:> material-icons/MoreVert]
+       [:> material/Popper
+        {:open open?
+         :style #js {:zIndex 1100}
+         :anchorEl #(reagent/dom-node this)
+         :placement "top-start"
+         :modifiers #js {:offset #js {:offset "-80%p"}
+                         :flip #js {:enabled false}
+                         :preventOverflow #js {:enabled false}
+                         :hide #js {:enabled false}}}
+        [:> material/Paper
+         {:elevation 8
+          :style #js {:backgroundColor "#ffffffba"}}
+         [:> material/MenuList
+          (map (fn [action]
+                 (with-meta
                    [:> material/MenuItem
                     {:onClick #(re-frame/dispatch [(action :event)])}
                     (action :name)]
-                 {:key (:name action)}))
-             actions)]]]]))
-
+                   {:key (:name action)}))
+               actions)]]]])))

@@ -10,6 +10,7 @@
 (declare posts-view)
 (declare post-view-mode)
 (declare editing-post-view)
+(declare confirm-delete-post)
 
 (defn content-view []
   (let [state (re-frame/subscribe [::subs/state])
@@ -22,7 +23,8 @@
                  :loading? @loading?}]
       :post_detail [post-view-mode {:post @selected-post}]
       :editing_post [editing-post-view {:post @selected-post}]
-      [:h2 "no matching"])))
+      :delete_post_confirmation [confirm-delete-post {:post @selected-post}]
+      [:h2 "Sem conteúdo pro estado " @state])))
 
 (declare posts-list)
 (declare no-post)
@@ -92,3 +94,41 @@
        :onChange on-content-change-fn
        :multiline true}]
      [post-view-mode {:post post}]]))
+
+(declare confirmation-buttons)
+
+(defn confirm-delete-post [{:keys [post]}]
+  [:<>
+   [:p
+    "Tem certeza que quer excluir o post "
+    [:span {:style #js {:fontWeight "bold"}}
+     (post :title)]
+    "?"]
+   [confirmation-buttons
+    {:yes-action {:name "Excluir" :event [:deleted-post (post :id)]}
+     :no-action {:name "Mudei de ideia" :event [:cancel]}}]])
+
+(defn confirmation-buttons [{:keys [yes-action no-action]}]
+  [:div.confirmation-buttons-container
+   {:style #js {:display "flex"
+                :flexFlow "column"
+                :alignItems "stretch"
+                :padding "12px"}}
+   [:div.buttons-countainer
+    {:style #js {:alignSelf "flex-end"
+                 :padding "20px 0"}}
+    [:> material/Button
+     {:variant "contained"
+      :size "small"
+      :color "secondary"
+      :onClick #(re-frame/dispatch (yes-action :event))
+      :style #js {:marginRight "4px"}}
+     (yes-action :name)]
+    [:> material/Button
+     {:variant "outlined"
+      :size "small"
+      :color "secondary"
+      :onClick #(re-frame/dispatch (no-action :event))
+      :style #js {:marginLeft "4px"
+                  :marginRight "8px"}}
+     (no-action :name)]]])
