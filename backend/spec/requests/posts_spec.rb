@@ -45,6 +45,33 @@ RSpec.describe 'Blog Posts API.', type: :request do
     end
   end
 
+  # Test suite for PUT /posts/:id
+  describe 'PUT /posts/:id' do
+    let(:post_attributes) { { title: 'Título do Post',
+                              submited_by: 'jpsoares106@gmail.com',
+                              content: '# Lorem Ipsum' } }
+
+    context 'When there is a post in DB and PUT /posts/1 is called changing the
+    content of the post' do
+      before { post '/posts', params: post_attributes }
+
+      it 'should retrieve a post with "Novo título" in its title' do
+        put '/posts/1', params: {title: 'Novo título'}
+        get '/posts'
+
+        expect(json.first['title']).to eq('Novo título')
+      end
+
+      it 'should retrieve a post with "## Subtítulo" in its content.' do
+        put '/posts/1', params: {content: '## Subtítulo'}
+        get '/posts'
+
+        expect(json.first['content']).to eq('## Subtítulo')
+      end
+    end
+
+  end
+
   private
   def json
     JSON.parse(response.body)

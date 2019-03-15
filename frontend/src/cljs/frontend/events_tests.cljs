@@ -65,9 +65,9 @@
   (testing "When post content is changed"
     (let [db {:domain {:posts [{:id 1 :title "Life answer" :content "41"}]}}]
       (is (= {:id 1 :title "Life answer" :content "42"}
-             (get-in (events/post-content-changed-handler
-                       db
-                       [:post-content-changed 1 "42"])
+             (get-in (events/post-changed-handler
+                       ::post-content-changed
+                       [db 1 "42"])
                      [:domain :posts 0]))))))
 
 (deftest change-state

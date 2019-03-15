@@ -33,50 +33,18 @@
       (assoc-in [:domain :posts] posts)
       (assoc-in [:ui :loading?] false)))
 
-(defn-traced toggled-actions-handler [db]
-  (update-in db [:ui :actions-open?] not))
-(re-frame/reg-event-db
-  ::toggled-actions
-  toggled-actions-handler)
-
-(defn send-update-to-server [db [_ id]]
-  (when-not (get-in db [:server :should-wait-to-update?])
-    (.log js/console "Agora enviando pro server")
-    (js/setTimeout
-      (fn []
-        (.log js/console "Tipo enviando pro server")
-        (re-frame/dispatch [::clear-update-timeout]))
-      5000))
-  db)
+(declare create-new-post-local)
+(declare create-new-post-on-server)
+(declare next-state)
 
 (re-frame/reg-event-db
-  ::clear-update-timeout
-  (fn-traced
-    [db]
-    (assoc-in db [:server :should-wait-to-update?] false)))
-
-(defn set-timeout-for-next-change [db]
-  (assoc-in db [:server :should-wait-to-update?] true))
-
-(defn get-post-index [db id]
-  (first (keep-indexed #(when (= id (:id %2)) %1) (get-in db [:domain :posts]))))
-
-(defn-traced post-title-changed-handler [db [_ id new-title]]
-  (assoc-in db [:domain :posts (get-post-index db id) :title] new-title))
-(re-frame/reg-event-db
-  ::post-title-changed
+  :post-created
   (fn-traced
     [db ev]
     (-> db
-        (post-title-changed-handler ev)
-        (send-update-to-server ev)
-        (set-timeout-for-next-change))))
-
-(defn-traced post-content-changed-handler [db [_ id new-content]]
-  (assoc-in db [:domain :posts (get-post-index db id) :content] new-content))
-(re-frame/reg-event-db
-  ::post-content-changed
-  post-content-changed-handler)
+        create-new-post-local
+        create-new-post-on-server
+        (next-state ev))))
 
 (defn create-new-post-local [db]
   (update-in db [:domain :posts] conj {:title "Título" :content "## Conteúdo"}))
@@ -95,6 +63,65 @@
     [db [_ post post-index]]
     (assoc-in db [:domain :posts post-index :id] (:id post))))
 
+(defn get-post [db id]
+  (first (keep #(when (= id (:id %)) %) (get-in db [:domain :posts]))) )
+
+(defn-traced send-update-to-server-handler
+    [db [_ id]]
+    (when-not (get-in db [:server :should-wait-to-update?])
+      (server-talk/update-post (get-post db id)))
+    db)
+(re-frame/reg-event-db
+  ::send-update-to-server
+  send-update-to-server-handler)
+
+(defn set-timeout-for-next-update
+  "It set the :should-wait-to-update? flag in app-state, so the update doesn't
+  happen in every keystroke, only every 5 seconds."
+  [db id]
+  (if-not (get-in db [:server :should-wait-to-update?])
+    (do
+      (js/setTimeout
+        (fn []
+          (re-frame/dispatch [::clear-update-timeout])
+          (re-frame/dispatch [::send-update-to-server id]))
+        5000)
+      (assoc-in db [:server :should-wait-to-update?] true))
+    db))
+
+(re-frame/reg-event-db
+  ::clear-update-timeout
+  (fn-traced
+    [db]
+    (assoc-in db [:server :should-wait-to-update?] false)))
+
+(defn get-post-index [db id]
+  (first (keep-indexed #(when (= id (:id %2)) %1) (get-in db [:domain :posts]))))
+
+(defn-traced post-changed-handler
+  [db [event id payload]]
+  (let [post-index (get-post-index db id)
+        title-or-content ({::post-title-changed :title
+                           ::post-content-changed :content} event)]
+    (-> db
+        (assoc-in [:domain :posts post-index title-or-content] payload)
+        (send-update-to-server-handler [event id])
+        (set-timeout-for-next-update id))))
+
+(re-frame/reg-event-db
+  ::post-title-changed
+  post-changed-handler)
+
+(re-frame/reg-event-db
+  ::post-content-changed
+  post-changed-handler)
+
+(defn-traced toggled-actions-handler [db]
+  (update-in db [:ui :actions-open?] not))
+(re-frame/reg-event-db
+  ::toggled-actions
+  toggled-actions-handler)
+
 (defn current->next-state
   [state-machine current-state transition]
   (get-in state-machine [current-state transition]))
@@ -106,15 +133,6 @@
                                           event)]
     (assoc-in db [:ui :state] new-state)
     db))
-
-(re-frame/reg-event-db
-  :post-created
-  (fn-traced
-    [db ev]
-    (-> db
-        create-new-post-local
-        create-new-post-on-server
-        (next-state ev))))
 
 (defn-traced clicked-post-handler
   [db [event post-id]]

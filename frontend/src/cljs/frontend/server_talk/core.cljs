@@ -30,3 +30,11 @@
           #(re-frame/dispatch
              [callback-event (:body response) post-index])
           5000))))
+
+(defn update-post
+  "It sends an http PUT request to the server to update a post,
+  it dispatches an event with the server response when it arrives."
+  [post]
+  (http/put (str "http://localhost:3000/posts/" (:id post))
+            {:with-credentials? false
+             :json-params post}))

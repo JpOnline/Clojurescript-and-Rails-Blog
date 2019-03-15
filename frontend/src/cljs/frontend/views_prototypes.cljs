@@ -70,7 +70,7 @@
        :open? true}]]])
   (reagent/atom true))
 
-(defcard-rg editing-post*
+(defcard-rg editing-post
   (fn [devcard-data _]
     [card-container
      @devcard-data
