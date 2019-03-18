@@ -1,7 +1,8 @@
 (ns frontend.db)
 
 (def default-db
-  {:ui {:state :initial
+  {:server {:user-role :reader}
+   :ui {:state :initial
         :actions-open? false}})
 
 ;; Defining state machines will help to keep track of component states when

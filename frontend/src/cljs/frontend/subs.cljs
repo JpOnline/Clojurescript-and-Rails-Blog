@@ -25,19 +25,26 @@
   ::state
   (fn [db] (get-in db [:ui :state])))
 
+(re-frame/reg-sub
+  ::user-role
+  (fn [db] (get-in db [:server :user-role])))
+
 (defn actions
-  [state]
-  (case state
-    :initial [{:name "Novo Post" :event :post-created}]
-    :editing_post [{:name "Ok" :event :ok}
-                   {:name "Excluir Post" :event :clicked-delete-post}]
-    :post_detail [{:name "Editar" :event :editing-post}
-                  {:name "Excluir Post" :event :clicked-delete-post}
-                  {:name "Voltar" :event :went-back}]
-    []))
+  [[state user-role]]
+  (let [does-not-matter user-role]
+    (case [state user-role]
+      [:initial :author] [{:name "Novo Post" :event :post-created}]
+      [:editing_post :author] [{:name "Ok" :event :ok}
+                               {:name "Excluir Post" :event :clicked-delete-post}]
+      [:post_detail :author] [{:name "Editar" :event :editing-post}
+                              {:name "Excluir Post" :event :clicked-delete-post}
+                              {:name "Voltar" :event :went-back}]
+      [:post_detail does-not-matter] [{:name "Voltar" :event :went-back}]
+      [])))
 (re-frame/reg-sub
   ::actions
   :<- [::state]
+  :<- [::user-role]
   actions)
 
 (defn return-arrow?
