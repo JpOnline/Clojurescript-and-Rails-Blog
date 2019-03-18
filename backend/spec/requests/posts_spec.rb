@@ -52,7 +52,7 @@ RSpec.describe 'Blog Posts API.', type: :request do
                               content: '# Lorem Ipsum' } }
 
     context 'When there is a post in DB and PUT /posts/1 is called changing the
-    content of the post' do
+    post' do
       before { post '/posts', params: post_attributes }
 
       it 'should retrieve a post with "Novo título" in its title' do
@@ -67,6 +67,12 @@ RSpec.describe 'Blog Posts API.', type: :request do
         get '/posts'
 
         expect(json.first['content']).to eq('## Subtítulo')
+      end
+
+      it 'should throw error when title is empty' do
+        put '/posts/1', params: {title: ''}
+
+        expect(response.body).to match(/Title can't be blank/)
       end
     end
 
@@ -90,7 +96,9 @@ RSpec.describe 'Blog Posts API.', type: :request do
     end
   end
 
+
   private
+
   def json
     JSON.parse(response.body)
   end

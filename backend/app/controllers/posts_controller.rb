@@ -15,7 +15,7 @@ class PostsController < ApplicationController
   # PUT /posts/:id
   def update
     @post = Post.find(params[:id])
-    @post.update(post_params)
+    @post.update!(post_params)
     head :no_content
   end
 
@@ -28,10 +28,6 @@ class PostsController < ApplicationController
 
 
   private
-
-  def json_response(object, status = :ok)
-    render json: object, status: status
-  end
 
   def post_params
     params.permit(:title, :submited_by, :content)
