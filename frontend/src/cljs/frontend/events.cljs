@@ -56,7 +56,10 @@
         (next-state ev))))
 
 (defn create-new-post-local [db]
-  (update-in db [:domain :posts] conj {:title "Título" :content "## Conteúdo"}))
+  (update-in db [:domain :posts] conj {:title "Título"
+                                       :content "## Conteúdo"
+                                       :created_at "0000-00-00"
+                                       :updated_at "0000-00-00T00:00:00.000Z"}))
 
 (defn create-new-post-on-server [db]
   (let [posts (get-in db [:domain :posts])]
@@ -160,6 +163,19 @@
 (re-frame/reg-event-db
   ::toggled-actions
   toggled-actions-handler)
+
+(defn-traced received-error-from-server-handler
+  [db [_ message]]
+  (assoc-in db [:ui :error-message] message))
+(re-frame/reg-event-db
+  ::received-error-from-server
+  (comp clean-loading-handler received-error-from-server-handler ))
+
+(re-frame/reg-event-db
+  ::clean-error-message
+  (fn-traced
+    [db]
+    (update-in db [:ui] dissoc :error-message)))
 
 (defn current->next-state
   [state-machine current-state transition]

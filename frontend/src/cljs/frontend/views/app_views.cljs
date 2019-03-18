@@ -13,12 +13,14 @@
 (declare top-bar)
 (declare main-view)
 (declare actions-menu)
+(declare error-message)
 
 (defn app []
   (let [top-bar-title (re-frame/subscribe [::subs/top-bar-title])
         actions (re-frame/subscribe [::subs/actions])
         actions-open? (re-frame/subscribe [::subs/actions-open?])
         loading? (re-frame/subscribe [::subs/loading?])
+        error-message-str (re-frame/subscribe [::subs/error-message])
         return-arrow? (re-frame/subscribe [::subs/return-arrow?])]
     [app-view
      [top-bar
@@ -26,6 +28,7 @@
        :return-arrow? @return-arrow?
        :loading? @loading?}]
      [main-view
+      (when @error-message-str [error-message @error-message-str])
       [content-views/content-view]]
      [actions-menu
       {:actions @actions
@@ -119,3 +122,18 @@
                     (action :name)]
                    {:key (:name action)}))
                actions)]]]])))
+
+(defn error-message [& children]
+  [:> material/Paper
+   {:style #js {:display "flex"
+                :flexDirection "row"
+                :justifyContent "space-between"}}
+   [:div.error-message {:style #js {:color "red"
+                                    :padding "5px 15px 15px 15px"}}
+    [:h3 "Erro ao comunicar com a nuvem"]
+    (map-indexed (fn [i c] ^{:key i} c) children)]
+   [:> material/IconButton
+    {:style #js {:alignSelf "flex-start"
+                 :marginTop "25px"}
+     :onClick #(re-frame/dispatch [::events/clean-error-message])}
+    [:> material-icons/Close]]])

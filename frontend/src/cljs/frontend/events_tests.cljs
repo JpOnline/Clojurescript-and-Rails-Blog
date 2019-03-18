@@ -152,3 +152,12 @@
           "It should change ui state to post detail.")
       (is (= 0 (get-in result [:ui :selected-post-index]))
           "It should set the selected post id to 3."))))
+
+(deftest error-handling
+  (let [result (is (events/received-error-from-server-handler
+                     {}
+                     [:e "server error message"])
+                   "When received error from server")]
+    (is (= {:ui {:error-message "server error message"}}
+           result)
+        "it should set an error message in the UI.")))

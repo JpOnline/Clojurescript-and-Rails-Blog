@@ -83,6 +83,7 @@
     [:<>
      [:> material/Input
       {:style #js {:width "95%"
+                   :height "40px"
                    :padding "0 8px"
                    :fontSize "2.125rem"
                    :margin "10px 0"

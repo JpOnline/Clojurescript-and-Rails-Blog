@@ -78,3 +78,6 @@
   :<- [::selected-post]
   top-bar-title)
 
+(re-frame/reg-sub
+  ::error-message
+  (fn [db] (get-in db [:ui :error-message])))

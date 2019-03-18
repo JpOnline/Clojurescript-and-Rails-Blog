@@ -162,6 +162,35 @@
           :open? true}]]]))
   {:hidden? (reagent/atom true)})
 
+(defcard-rg error-message
+  (fn [devcard-data _]
+    (let [ui-state :editing_post
+          selected-post {:id 1
+                         :title ""
+                         :submited_by "jpsoares106@gmail.com"
+                         :content @(:content @devcard-data)
+                         :created_at "2018-12-06T20:16:23.423Z"
+                         :updated_at "2019-06-01T20:06:21.353Z"}]
+      [card-container
+       @devcard-data
+       [app-views/app-view
+        [app-views/top-bar
+         {:title (subs/top-bar-title [ui-state selected-post])
+          :return-arrow? (subs/return-arrow? ui-state)}]
+        [app-views/main-view
+         [app-views/error-message
+          "Error message from server."]
+         [content-views/editing-post-view
+          {:post selected-post
+           :opt-on-content-change-fn #(reset!
+                                        (:content @devcard-data)
+                                        (-> % .-target .-value))}]]
+        [app-views/actions-menu
+         {:actions (subs/actions ui-state)
+          :open? true}]]]))
+  {:hidden? (reagent/atom true)
+   :content (reagent/atom "## Conteúdo")})
+
 (defcard initial-state-machine-doc
   (str "## Máquinas de Estado Finito
 
