@@ -20,4 +20,14 @@ class AuthenticateUser
 
     new_passcode
   end
+
+  def login(passcode)
+    user = User.find_by(email: @email)
+
+    if user && user.authenticate(passcode)
+      JsonWebToken.encode(user_id: user.id)
+    else
+      raise(ExceptionHandler::AuthenticationError, 'Credenciais inválidas')
+    end
+  end
 end
