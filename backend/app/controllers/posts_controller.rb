@@ -8,8 +8,12 @@ class PostsController < ApplicationController
 
   # POST /posts
   def create
-    @post = Post.create!(post_params)
-    json_response(@post, :created)
+    @post = Post.new(post_params)
+    @post[:submited_by] = current_user[:email] if current_user
+    @post.save!
+
+    json_response({post: @post,
+                   user_role: user_role}, :created)
   end
 
   # PUT /posts/:id

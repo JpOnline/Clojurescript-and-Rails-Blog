@@ -6,4 +6,12 @@ class JsonWebToken
 
     JWT.encode(payload, HMAC_SECRET)
   end
+
+  def self.decode(token)
+    payload = JWT.decode(token, HMAC_SECRET)[0]
+    HashWithIndifferentAccess.new payload
+
+  rescue JWT::DecodeError => e
+    raise ExceptionHandler::InvalidToken, e.message
+  end
 end

@@ -27,4 +27,23 @@ class AuthenticateUser
       raise(ExceptionHandler::AuthenticationError, 'Credenciais inválidas')
     end
   end
+
+  def self.logged_user(headers)
+    decoded_auth_token = decode_auth_token(headers)
+
+    User.find(decoded_auth_token[:user_id]) if decoded_auth_token
+  end
+
+
+  private
+
+  def self.decode_auth_token(headers)
+    if !headers['Authorization'].present?
+      return nil
+    end
+
+    http_auth_header = headers['Authorization'].split(' ').last
+
+    JsonWebToken.decode(http_auth_header)
+  end
 end

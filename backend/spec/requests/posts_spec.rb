@@ -4,22 +4,34 @@ RSpec.describe 'Blog Posts API.', type: :request do
   # Test suite for POST /posts
   describe 'The POST /posts endpoint.' do
     let(:post_attributes) { { title: 'This is TDD',
-                              submited_by: 'jpsoares106@gmail.com',
                               content: '# Lorem Ipsum' } }
 
     context 'When /posts is called with blog post attributes' do
       before { post '/posts', params: post_attributes }
 
       it 'should create a blog post with the given title' do
-        expect(json['title']).to eq(post_attributes[:title])
-      end
-
-      it 'should create a blog post with the given created_by' do
-        expect(json['submited_by']).to eq(post_attributes[:submited_by])
+        expect(json['post']['title']).to eq(post_attributes[:title])
       end
 
       it 'should create a blog post with the given content' do
-        expect(json['content']).to eq(post_attributes[:content])
+        expect(json['post']['content']).to eq(post_attributes[:content])
+      end
+
+      it 'should provide user role of reader' do
+        expect(json['user_role']).to eq('reader')
+      end
+    end
+
+    context 'When post is submitted with a user logged as author' do
+      before {
+        user_passcode = AuthenticateUser.new_passcode('jpsoares106@gmail.com')
+        post '/auth/login', params: {email: 'jpsoares106@gmail.com',
+                                     passcode: user_passcode}
+        post '/posts', params: post_attributes,
+                       headers: {"Authorization" => json['auth_token']}}
+
+      it 'should create a blog post with the logged user as submited_by' do
+        expect(json['post']['submited_by']).to eq('jpsoares106@gmail.com')
       end
     end
 
