@@ -5,14 +5,14 @@ RSpec.describe 'Authentication', type: :request do
 
     context 'When a valid email is provided' do
       it 'should create user with a passcode' do
-        user_passcode = AuthenticateUser.new('jpsoares106@gmail.com').new_passcode
+        user_passcode = AuthenticateUser.new_passcode('jpsoares106@gmail.com')
 
         expect(user_passcode).not_to be_nil
       end
 
       it 'should generate a new passcode every time is requested' do
-        passcode1 = AuthenticateUser.new('jpsoares106@gmail.com').new_passcode
-        passcode2 = AuthenticateUser.new('jpsoares106@gmail.com').new_passcode
+        passcode1 = AuthenticateUser.new_passcode('jpsoares106@gmail.com')
+        passcode2 = AuthenticateUser.new_passcode('jpsoares106@gmail.com')
 
         expect(passcode1).not_to eq(passcode2)
       end
@@ -22,7 +22,7 @@ RSpec.describe 'Authentication', type: :request do
   describe 'POST /auth/login' do
     context 'When user provide the right passcode sent by email' do
       it 'should return an authentication token' do
-        user_passcode = AuthenticateUser.new('jpsoares106@gmail.com').new_passcode
+        user_passcode = AuthenticateUser.new_passcode('jpsoares106@gmail.com')
         post '/auth/login', params: {email: 'jpsoares106@gmail.com',
                                      passcode: user_passcode}
 
