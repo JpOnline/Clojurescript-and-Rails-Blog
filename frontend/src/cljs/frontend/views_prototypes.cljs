@@ -57,7 +57,7 @@
                     :created_at "2018-12-06T20:16:23.423Z"
                     :updated_at "2019-06-01T20:06:21.353Z"}]}]]
         [app-views/actions-menu
-         {:actions (subs/actions ui-state)
+         {:actions (subs/actions [ui-state "author"])
           :open? true}]]]))
   {:hidden? (reagent/atom true)})
 
@@ -81,7 +81,7 @@
                     :created_at "2018-12-06T20:16:23.423Z"
                     :updated_at "2019-06-01T20:06:21.353Z"}]}]]
         [app-views/actions-menu
-         {:actions (subs/actions ui-state)
+         {:actions (subs/actions [ui-state "author"])
           :open? true}]]]))
   {:hidden? (reagent/atom true)})
 
@@ -110,7 +110,7 @@
                                         (:content @devcard-data)
                                         (-> % .-target .-value))}]]
         [app-views/actions-menu
-         {:actions (subs/actions ui-state)
+         {:actions (subs/actions [ui-state "author"])
           :open? true}]]]))
   {:hidden? (reagent/atom true)
    :title (reagent/atom "Título do post")
@@ -135,7 +135,7 @@
          [content-views/post-view-mode
           {:post selected-post}]]
         [app-views/actions-menu
-         {:actions (subs/actions ui-state)
+         {:actions (subs/actions [ui-state "author"])
           :open? true}]]]))
   {:hidden? (reagent/atom true)
    :content (reagent/atom "## Conteúdo")})
@@ -158,7 +158,7 @@
                   :created_at "2018-12-06T20:16:23.423Z"
                   :updated_at "2019-06-01T20:06:21.353Z"}}]]
         [app-views/actions-menu
-         {:actions (subs/actions ui-state)
+         {:actions (subs/actions [ui-state "author"])
           :open? true}]]]))
   {:hidden? (reagent/atom true)})
 
@@ -186,10 +186,42 @@
                                         (:content @devcard-data)
                                         (-> % .-target .-value))}]]
         [app-views/actions-menu
-         {:actions (subs/actions ui-state)
+         {:actions (subs/actions [ui-state "author"])
           :open? true}]]]))
   {:hidden? (reagent/atom true)
    :content (reagent/atom "## Conteúdo")})
+
+(defcard-rg email_input
+  (fn [devcard-data _]
+    (let [ui-state :email_input]
+      [card-container
+       @devcard-data
+       [app-views/app-view
+        [app-views/top-bar
+         {:title (subs/top-bar-title [ui-state nil])
+          :return-arrow? (subs/return-arrow? ui-state)}]
+        [app-views/main-view
+         [content-views/email-input-view]]
+        [app-views/actions-menu
+         {:actions (subs/actions [ui-state nil])
+          :open? true}]]]))
+  {:hidden? (reagent/atom true)})
+
+(defcard-rg passcode_input
+  (fn [devcard-data _]
+    (let [ui-state :email_input]
+      [card-container
+       @devcard-data
+       [app-views/app-view
+        [app-views/top-bar
+         {:title (subs/top-bar-title [ui-state nil])
+          :return-arrow? (subs/return-arrow? ui-state)}]
+        [app-views/main-view
+         [content-views/passcode-input-view]]
+        [app-views/actions-menu
+         {:actions (subs/actions [ui-state nil])
+          :open? true}]]]))
+  {:hidden? (reagent/atom true)})
 
 (defcard initial-state-machine-doc
   (str "## Máquinas de Estado Finito
@@ -209,7 +241,25 @@
     db/initial-state-machine
     "fsm"))
 
+(defonce login-state-machine
+  (viz-state-machine/generate-image
+    db/login-state-machine
+    "fsm"))
+
 (declare card-expander)
+
+(defcard-rg login-state-machine
+  (fn [hidden? _]
+    (swap! devcards-hidden conj hidden?)
+    [:<>
+     [card-expander
+      {:hidden? hidden?}]
+     [:div
+      {:style #js {:overflow "auto"}
+       :hidden @hidden?
+       :dangerouslySetInnerHTML
+       #js {:__html login-state-machine}}]])
+  (reagent/atom true))
 
 (defcard-rg initial-state-machine
   (fn [hidden? _]

@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 class AuthenticateUser
 
   def self.new_passcode(email)
@@ -22,9 +20,10 @@ class AuthenticateUser
     user = User.find_by(email: email)
 
     if user && user.authenticate(passcode)
-      JsonWebToken.encode(user_id: user.id)
+      {auth_token: JsonWebToken.encode(user_id: user.id),
+       user: user}
     else
-      raise(ExceptionHandler::AuthenticationError, 'Credenciais inválidas')
+      raise(ExceptionHandler::UnauthorizedRequest, 'Credenciais inválidas')
     end
   end
 
@@ -32,6 +31,15 @@ class AuthenticateUser
     decoded_auth_token = decode_auth_token(headers)
 
     User.find(decoded_auth_token[:user_id]) if decoded_auth_token
+  end
+
+  def self.user_role(user)
+    # There's only one author for the blog, for demonstration purposes any logged
+    # user is an author.
+
+    # return user && user.email == 'jpsoares106@gmail.com' ? 'author' : 'reader'
+
+    return user ? 'author' : 'reader'
   end
 
 

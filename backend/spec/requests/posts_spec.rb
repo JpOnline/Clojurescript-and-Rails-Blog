@@ -21,8 +21,9 @@ RSpec.describe 'Blog Posts API.', type: :request do
         user_passcode = AuthenticateUser.new_passcode('jpsoares106@gmail.com')
         post '/auth/login', params: {email: 'jpsoares106@gmail.com',
                                      passcode: user_passcode}
-        post '/posts', params: post_attributes,
-                       headers: {"Authorization" => json['auth_token']}}
+        post '/posts', params: post_attributes.to_json,
+                       headers: {"Authorization" => json['auth_token'],
+                                 "Content-Type" => "application/json"}}
 
       it 'should create a blog post with the given title' do
         expect(json['title']).to eq(post_attributes[:title])

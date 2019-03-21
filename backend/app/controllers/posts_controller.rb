@@ -8,10 +8,7 @@ class PostsController < ApplicationController
 
   # POST /posts
   def create
-    if user_role != 'author'
-      return json_response({message: 'Apenas autores podem criar posts.'},
-                           :unauthorized)
-    end
+    validate_author 'Apenas autores podem criar posts.'
 
     @post = Post.new(post_params)
     @post[:submited_by] = current_user[:email] if current_user
@@ -22,10 +19,7 @@ class PostsController < ApplicationController
 
   # PUT /posts/:id
   def update
-    if user_role != 'author'
-      return json_response({message: 'Apenas autores podem editar posts.'},
-                           :unauthorized)
-    end
+    validate_author 'Apenas autores podem editar posts.'
 
     @post = Post.find(params[:id])
     @post.update!(post_params)
@@ -34,10 +28,7 @@ class PostsController < ApplicationController
 
   # DELETE /posts/:id
   def destroy
-    if user_role != 'author'
-      return json_response({message: 'Apenas autores podem deletar posts.'},
-                           :unauthorized)
-    end
+    validate_author 'Apenas autores podem deletar posts.'
 
     @post = Post.find(params[:id])
     @post.destroy
@@ -49,5 +40,11 @@ class PostsController < ApplicationController
 
   def post_params
     params.permit(:title, :submited_by, :content)
+  end
+
+  def validate_author(error_message)
+    if user_role != 'author'
+      raise(ExceptionHandler::UnauthorizedRequest, error_message)
+    end
   end
 end

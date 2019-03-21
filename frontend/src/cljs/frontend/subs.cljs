@@ -27,16 +27,19 @@
 
 (re-frame/reg-sub
   ::user-role
-  (fn [db] (get-in db [:server :user-role])))
+  (fn [db] (get-in db [:server :user :role])))
 
 (defn actions
   [[state user-role]]
   (let [does-not-matter user-role]
     (case [state user-role]
-      [:initial :author] [{:name "Novo Post" :event :post-created}]
-      [:editing_post :author] [{:name "Ok" :event :ok}
+      [:initial "author"] [{:name "Novo Post" :event :post-created}
+                          {:name "Logout" :event :clicked-logout}]
+      [:initial nil] [{:name "Login" :event :clicked-login-action}]
+      [:initial "reader"] [{:name "Logout" :event :clicked-logout}]
+      [:editing_post "author"] [{:name "Ok" :event :ok}
                                {:name "Excluir Post" :event :clicked-delete-post}]
-      [:post_detail :author] [{:name "Editar" :event :editing-post}
+      [:post_detail "author"] [{:name "Editar" :event :editing-post}
                               {:name "Excluir Post" :event :clicked-delete-post}
                               {:name "Voltar" :event :went-back}]
       [:post_detail does-not-matter] [{:name "Voltar" :event :went-back}]
@@ -54,6 +57,8 @@
     :post_detail true
     :editing_post true
     :delete_post_confirmation true
+    :email_input true
+    :passcode_input true
     false))
 (re-frame/reg-sub
   ::return-arrow?
@@ -78,6 +83,8 @@
     :post_detail (selected-post :title)
     :editing_post (selected-post :title)
     :delete_post_confirmation "Tem Certeza?"
+    :email_input "Autenticação"
+    :passcode_input "Autenticação"
     "??"))
 (re-frame/reg-sub
   ::top-bar-title
@@ -88,3 +95,11 @@
 (re-frame/reg-sub
   ::error-message
   (fn [db] (get-in db [:ui :error-message])))
+
+(re-frame/reg-sub
+  ::email-input
+  (fn [db] (get-in db [:ui :email-input])))
+
+(re-frame/reg-sub
+  ::passcode-input
+  (fn [db] (get-in db [:ui :passcode-input])))

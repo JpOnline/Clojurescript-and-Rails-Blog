@@ -10,8 +10,6 @@ class ApplicationController < ActionController::API
 
   def add_user_info
     @current_user = AuthenticateUser.logged_user(request.headers)
-
-    @user_role = @current_user && @current_user.email == 'jpsoares106@gmail.com' ?
-      'author' : 'reader'
+    @user_role = AuthenticateUser.user_role(@current_user)
   end
 end

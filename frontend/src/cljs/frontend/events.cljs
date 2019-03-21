@@ -62,10 +62,12 @@
                                        :updated_at "0000-00-00T00:00:00.000Z"}))
 
 (defn create-new-post-on-server [db]
-  (let [posts (get-in db [:domain :posts])]
+  (let [posts (get-in db [:domain :posts])
+        auth-token (get-in db [:server :auth-token])]
     (server-talk/create-post
       (last posts)
       (dec (count posts))
+      auth-token
       ::post-created-on-server)
     (assoc-in db [:ui :loading?] true)))
 
@@ -75,6 +77,9 @@
     [db [_ post post-index]]
     (-> db
         (assoc-in [:domain :posts post-index :id] (:id post))
+        (assoc-in [:domain :posts post-index :submited_by] (:submited_by post))
+        (assoc-in [:domain :posts post-index :created_at] (:created_at post))
+        (assoc-in [:domain :posts post-index :updated_at] (:updated_at post))
         clean-loading-handler)))
 
 (defn get-post [db id]
@@ -83,7 +88,10 @@
 (defn-traced send-update-to-server-handler
     [db [_ id]]
     (when-not (get-in db [:server :should-wait-to-update?])
-      (server-talk/update-post (get-post db id) ::clean-loading-state))
+      (server-talk/update-post
+        (get-post db id)
+        (get-in db [:server :auth-token])
+        ::clean-loading-state))
     db)
 (re-frame/reg-event-db
   ::send-update-to-server
@@ -146,7 +154,10 @@
   :deleted-post
   (fn-traced
     [db [event id]]
-    (server-talk/delete-post id ::clean-loading-state)
+    (server-talk/delete-post
+      id
+      (get-in db [:server :auth-token])
+      ::clean-loading-state)
     (-> db
         (assoc-in [:ui :loading?] true)
         (deleted-post-handler id)
@@ -177,13 +188,77 @@
     [db]
     (update-in db [:ui] dissoc :error-message)))
 
+(defn-traced email-input-changed-handler
+  [db [_ email]]
+  (assoc-in db [:ui :email-input] email))
+(re-frame/reg-event-db
+  ::email-input-changed
+  email-input-changed-handler)
+
+(re-frame/reg-event-db
+  ::submit-email-clicked
+  (fn-traced
+    [db [_ email]]
+    (server-talk/new-passcode email :server-sent-passcode)
+    (assoc-in db [:ui :loading?] true)))
+
+(defn-traced server-sent-passcode-handler
+  [db [event email]]
+  (-> db
+      (next-state [event])
+      (update-in [:ui] dissoc :email-input)
+      (assoc-in [:server :user :email] email)
+      clean-loading-handler))
+(re-frame/reg-event-db
+  :server-sent-passcode
+  server-sent-passcode-handler)
+
+(defn-traced passcode-input-changed-handler
+  [db [_ passcode]]
+  (assoc-in db [:ui :passcode-input] passcode))
+(re-frame/reg-event-db
+  ::passcode-input-changed
+  passcode-input-changed-handler)
+
+(re-frame/reg-event-db
+  ::submit-passcode-clicked
+  (fn-traced
+    [db [_ passcode]]
+    (server-talk/authenticate
+      (get-in db [:server :user :email])
+      passcode
+      :server-authenticated-user)
+    (assoc-in db [:ui :loading?] true)))
+
+(defn-traced server-authenticated-user-handler
+  [db [event {:keys [user_role user auth_token]}]]
+  (-> db
+      (next-state [event])
+      (assoc-in [:server :auth-token] auth_token)
+      (assoc-in [:server :user] user)
+      (assoc-in [:server :user :role] user_role)
+      (update-in [:ui] dissoc :passcode-input)
+      clean-loading-handler))
+(re-frame/reg-event-db
+  :server-authenticated-user
+  server-authenticated-user-handler)
+
+(defn-traced clicked-logout-handler
+  [db]
+  (-> db
+      (update-in [:server] dissoc :user)
+      (update-in [:server] dissoc :auth-token)))
+(re-frame/reg-event-db
+  :clicked-logout
+  clicked-logout-handler)
+
 (defn current->next-state
   [state-machine current-state transition]
   (get-in state-machine [current-state transition]))
 
 (defn-traced next-state
   [db [event]]
-  (if-let [new-state (current->next-state db/initial-state-machine
+  (if-let [new-state (current->next-state db/ui-state-machine
                                           (get-in db [:ui :state])
                                           event)]
     (assoc-in db [:ui :state] new-state)
@@ -194,3 +269,4 @@
 (re-frame/reg-event-db :editing-post next-state)
 (re-frame/reg-event-db :clicked-delete-post next-state)
 (re-frame/reg-event-db :cancel next-state)
+(re-frame/reg-event-db :clicked-login next-state)

@@ -11,6 +11,8 @@
 (declare post-view-mode)
 (declare editing-post-view)
 (declare confirm-delete-post)
+(declare email-input-view)
+(declare passcode-input-view)
 
 (defn content-view []
   (let [state (re-frame/subscribe [::subs/state])
@@ -24,6 +26,8 @@
       :post_detail [post-view-mode {:post @selected-post}]
       :editing_post [editing-post-view {:post @selected-post}]
       :delete_post_confirmation [confirm-delete-post {:post @selected-post}]
+      :email_input [email-input-view]
+      :passcode_input [passcode-input-view]
       [:h2 "Sem conteúdo pro estado " @state])))
 
 (declare posts-list)
@@ -90,7 +94,8 @@
                    :color "inherit"}
        :value (post :title)
        :onChange on-title-change-fn
-       :multiline true}][:> material/Input
+       :multiline true}]
+     [:> material/Input
       {:style #js {:width "95%"
                    :padding "0 8px"
                    :border "1px solid #00000038"
@@ -138,3 +143,51 @@
       :style #js {:marginLeft "4px"
                   :marginRight "8px"}}
      (no-action :name)]]])
+
+(defn email-input-view []
+  (let [email (or @(re-frame/subscribe [::subs/email-input]) "")]
+    [:div.email-input-view
+     {:style #js {:display "flex"
+                  :flexDirection "column"
+                  :maxWidth "315px"
+                  :margin "auto"}}
+     [:h1 {:style #js {:margin "15px 0 -5px 0"}}
+      "Insira seu email"]
+     [:p {:style #js {:color "gray"}}
+      "Você receberá um código de verificação."]
+     [:> material/Input
+      {:value email
+       :onChange #(re-frame/dispatch
+                    [::events/email-input-changed (-> % .-target .-value)])
+       :placeholder "exemplo@dominio.com"
+       :style #js {:margin "15px 0"}}]
+     [:> material/Fab
+      {:color "secondary"
+       :onClick #(re-frame/dispatch [::events/submit-email-clicked email])
+       :style #js {:margin "12px 0"
+                   :alignSelf "flex-end"}}
+      [:> material-icons/ArrowForward]]]))
+
+(defn passcode-input-view []
+  (let [passcode (or @(re-frame/subscribe [::subs/passcode-input]) "")]
+    [:div.passcode-input-view
+     {:style #js {:display "flex"
+                  :flexDirection "column"
+                  :maxWidth "315px"
+                  :margin "auto"}}
+     [:h1 {:style #js {:margin "15px 0 -5px 0"}}
+      "Código de verificação"]
+     [:p {:style #js {:color "gray"}}
+      "Insira o código que te enviei por email."]
+     [:> material/Input
+      {:value passcode
+       :onChange #(re-frame/dispatch
+                    [::events/passcode-input-changed (-> % .-target .-value)])
+       :placeholder "12345"
+       :style #js {:margin "15px 0"}}]
+     [:> material/Fab
+      {:color "secondary"
+       :onClick #(re-frame/dispatch [::events/submit-passcode-clicked passcode])
+       :style #js {:margin "12px 0"
+                   :alignSelf "flex-end"}}
+      [:> material-icons/ArrowForward]]]))

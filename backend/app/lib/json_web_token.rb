@@ -12,6 +12,7 @@ class JsonWebToken
     HashWithIndifferentAccess.new payload
 
   rescue JWT::DecodeError => e
-    raise StandardError, "Inválido Json Web Token. " + e.message
+    raise ExceptionHandler::UnprocessableEntity,
+      "Inválido Json Web Token. " + e.message
   end
 end

@@ -2,7 +2,6 @@ require 'rails_helper'
 
 RSpec.describe 'Authentication', type: :request do
   describe 'POST /auth/new_passcode' do
-
     context 'When a valid email is provided' do
       it 'should create user with a passcode' do
         user_passcode = AuthenticateUser.new_passcode('jpsoares106@gmail.com')
@@ -15,6 +14,14 @@ RSpec.describe 'Authentication', type: :request do
         passcode2 = AuthenticateUser.new_passcode('jpsoares106@gmail.com')
 
         expect(passcode1).not_to eq(passcode2)
+      end
+    end
+
+    context 'When an invalid email is provided' do
+      before {post '/auth/new_passcode', params: {email: 'not an email'}}
+
+      it 'should send error message not a valid email.' do
+        expect(response.body).to match(/Email inválido/)
       end
     end
   end

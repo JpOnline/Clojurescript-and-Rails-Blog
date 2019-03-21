@@ -5,7 +5,7 @@
     [frontend.events :as events]
     [frontend.views-prototypes]))
 
-(defcard initial-state-machine-doc
+(defcard tests-doc
   (str "# Tests
 
        We are using a **humble view** strategy to test the user interface. The
@@ -128,7 +128,10 @@
                (events/next-state db [:post-created])
                [:ui :state]))
           "It should transit to the editing_post state.")
-      (is (= [{:title "Título", :content "## Conteúdo"}]
+      (is (= [{:title "Título",
+               :content "## Conteúdo"
+               :created_at "0000-00-00",
+               :updated_at "0000-00-00T00:00:00.000Z"}]
              (get-in (events/create-new-post-local db) [:domain :posts]))
           "It should create post locally.")))
 
@@ -161,3 +164,68 @@
     (is (= {:ui {:error-message "server error message"}}
            result)
         "it should set an error message in the UI.")))
+
+(deftest login-events
+  (let [app-state (is {:ui {:state :email_input}}
+                      "Given user is in the email_input screen (app-state)")
+        event (is [::events/email-input-changed "email@dominio.com"]
+                  "When email input changed (event)")
+        result (is (events/email-input-changed-handler app-state event)
+                   "(result)")]
+    (is (= (get-in result [:ui :email-input])
+           "email@dominio.com")
+        "it should set the email input."))
+
+  (let [app-state (is {:ui {:state :email_input
+                            :email-input "email@dominio.com"}}
+                      "Given the email input is set with a valid email")
+        event (is [:server-sent-passcode]
+                  "When server sent verification code by email (event)")
+        result (is (events/server-sent-passcode-handler app-state event)
+                   "(result)")]
+    (is (= (get-in result [:ui :state])
+           :passcode_input)
+        "it should change screen to the passcode input view,")
+    (is (= (get-in result [:ui :email-input])
+           nil)
+        "it should clean the email input"))
+
+  (let [app-state (is {:ui {:state :passcode_input}}
+                      "Given user is in the passcode input screen (app-state)")
+        event (is [::events/passcode-input-changed "23456"]
+                  "When passcode input changed (event)")
+        result (is (events/passcode-input-changed-handler app-state event)
+                   "(result)")]
+    (is (= (get-in result [:ui :passcode-input])
+           "23456")
+        "it should set the passcode input."))
+
+  (let [app-state (is {:ui {:state :passcode_input
+                            :passcode-input "23456"}}
+                      "Given the passcode input is set with a valid passcode")
+        event (is [:server-authenticated-user {:user_role "author"}]
+                  "When server authenticated the user (event)")
+        result (is (events/server-authenticated-user-handler app-state event)
+                   "(result)")]
+    (is (= (get-in result [:ui :state])
+           :initial)
+        "it should change to the initial screen,")
+    (is (= (get-in result [:ui :passcode-input])
+           nil)
+        "it should clean the passcode input")
+    (is (#{"reader" "author"} (get-in result [:server :user :role]))
+        "it should set the user role to reader or author."))
+
+  (let [app-state (is {:ui {:state :initial}
+                       :server {:user {:email "a@b.com"
+                                       :role "reader"}
+                                :auth-token "x"}}
+                      "Given a logged user (app-state)")
+        event (is [::events/logout]
+                  "When user logout (event)")
+        result (is (events/clicked-logout-handler app-state event)
+                   "(result)")]
+    (is (nil? (get-in result [:server :user]))
+        "it should unset user information")
+    (is (nil? (get-in result [:server :auth-token]))
+        "it should unset auth-token")))
