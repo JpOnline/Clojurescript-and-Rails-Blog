@@ -35,7 +35,7 @@
     (case [state user-role]
       [:initial "author"] [{:name "Novo Post" :event :post-created}
                           {:name "Logout" :event :clicked-logout}]
-      [:initial nil] [{:name "Login" :event :clicked-login-action}]
+      [:initial nil] [{:name "Login" :event :clicked-login}]
       [:initial "reader"] [{:name "Logout" :event :clicked-logout}]
       [:editing_post "author"] [{:name "Ok" :event :ok}
                                {:name "Excluir Post" :event :clicked-delete-post}]
