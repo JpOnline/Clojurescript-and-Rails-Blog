@@ -21,7 +21,7 @@ RSpec.describe 'Authentication', type: :request do
       before {post '/auth/new_passcode', params: {email: 'not an email'}}
 
       it 'should send error message not a valid email.' do
-        expect(response.body).to match(/Email inválido/)
+        expect(response.body).to match(/Invalid email/)
       end
     end
   end
@@ -42,7 +42,7 @@ RSpec.describe 'Authentication', type: :request do
         post '/auth/login', params: {email: 'jpsoares106@gmail.com',
                                      passcode: '1234'}
 
-        expect(response.body).to match(/Credenciais inválidas/)
+        expect(response.body).to match(/Invalid credentials/)
       end
     end
   end

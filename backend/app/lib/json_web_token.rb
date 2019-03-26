@@ -13,6 +13,6 @@ class JsonWebToken
 
   rescue JWT::DecodeError => e
     raise ExceptionHandler::UnprocessableEntity,
-      "Inválido Json Web Token. " + e.message
+      "Invalid Json Web Token. " + e.message
   end
 end

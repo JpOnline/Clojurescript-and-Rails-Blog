@@ -11,7 +11,7 @@ RSpec.describe 'Blog Posts API.', type: :request do
       before { post '/posts', params: post_attributes }
 
       it 'should send an error message saying only authors can create posts' do
-        expect(response.body).to match(/Apenas autores podem criar posts/)
+        expect(response.body).to match(/Only authors can create post/)
       end
     end
 
@@ -47,7 +47,7 @@ RSpec.describe 'Blog Posts API.', type: :request do
                        headers: {"Authorization" => "Wront JWT"}}
 
       it 'should send an error message saying that is an invalid JWT' do
-        expect(response.body).to match(/Inválido Json Web Token/)
+        expect(response.body).to match(/Invalid Json Web Token/)
       end
     end
 
@@ -96,7 +96,7 @@ RSpec.describe 'Blog Posts API.', type: :request do
           it should send an error message saying only authors can update posts' do
         put '/posts/1', params: {title: 'Novo título'}
 
-        expect(response.body).to match(/Apenas autores podem editar posts/)
+        expect(response.body).to match(/Only authors can edit post/)
       end
     end
 
@@ -153,7 +153,7 @@ RSpec.describe 'Blog Posts API.', type: :request do
       it 'When a not logged user calls DELETE /posts/1' do
         delete '/posts/1'
 
-        expect(response.body).to match(/Apenas autores podem deletar posts/)
+        expect(response.body).to match(/Only authors can delete post/)
       end
 
       it 'When an author user calls DELETE /posts/1' do

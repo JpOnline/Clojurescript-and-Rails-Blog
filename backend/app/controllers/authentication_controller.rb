@@ -10,10 +10,10 @@ class AuthenticationController < ApplicationController
       .passcode_email(email, user_passcode)
       .deliver_now
 
-    puts "\n\nCaso vc nao queira ir ate seu email pra olhar o codigo..\n
-    Codigo de verificacao: #{user_passcode}\n\n\n"
+    puts "\n\nFor the case you don't want to look in your email here's the code..\n
+    Verification code:: #{user_passcode}\n\n\n"
 
-    json_response({message: "Código de verificação enviado para #{auth_params[:email]}"})
+    json_response({message: "Verification code sent to #{auth_params[:email]}"})
   end
 
   def authenticate
@@ -37,7 +37,7 @@ class AuthenticationController < ApplicationController
     valid_email_regex = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
 
     if !valid_email_regex.match(email)
-      raise(ExceptionHandler::BadRequest, 'Email inválido')
+      raise(ExceptionHandler::BadRequest, 'Invalid email')
     end
   end
 end

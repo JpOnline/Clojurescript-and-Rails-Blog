@@ -8,7 +8,7 @@ class PostsController < ApplicationController
 
   # POST /posts
   def create
-    validate_author 'Apenas autores podem criar posts.'
+    validate_author 'Only authors can create posts.'
 
     @post = Post.new(post_params)
     @post[:submited_by] = current_user[:email] if current_user
@@ -19,7 +19,7 @@ class PostsController < ApplicationController
 
   # PUT /posts/:id
   def update
-    validate_author 'Apenas autores podem editar posts.'
+    validate_author 'Only authors can edit posts.'
 
     @post = Post.find(params[:id])
     @post.update!(post_params)
@@ -28,7 +28,7 @@ class PostsController < ApplicationController
 
   # DELETE /posts/:id
   def destroy
-    validate_author 'Apenas autores podem deletar posts.'
+    validate_author 'Only authors can delete posts.'
 
     @post = Post.find(params[:id])
     @post.destroy

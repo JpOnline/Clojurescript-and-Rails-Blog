@@ -4,8 +4,8 @@ class ApplicationMailer < ActionMailer::Base
 
   def passcode_email(email, passcode)
     mail(to: email,
-         subject: "Código de verificação: #{passcode}",
-         body: "<h1>Código de verificação: #{passcode}</h1>",
+         subject: "Verirication code: #{passcode}",
+         body: "<h1>Verirication code: #{passcode}</h1>",
          content_type: "text/html")
   end
 end

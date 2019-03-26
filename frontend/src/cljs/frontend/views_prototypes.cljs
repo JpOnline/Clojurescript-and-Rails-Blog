@@ -12,6 +12,16 @@
 
 (defonce devcards-hidden (reagent/atom []))
 
+(defcard prototypes-doc
+  (str "## Prototypes
+
+       The prototypes work like tests, it's useful to have states of the app ready
+       be manually glanced. Their interaction is limited as it's intended to fixed
+       state of the app.")
+  {}
+  {:frame false
+   :heading false})
+
 ;; Hidding Cards
 (defcard-rg hidding-cards
   (let [card-container-style #js {:display "flex"
@@ -38,6 +48,7 @@
   {:frame false})
 
 (declare card-container)
+(declare post-content)
 
 (defcard-rg initial-state
   (fn [devcard-data _]
@@ -51,9 +62,9 @@
         [app-views/main-view
          [content-views/posts-view
           {:posts [{:id 1
-                    :title "Título do post"
+                    :title "Post title"
                     :submited_by "jpsoares106@gmail.com"
-                    :content "## Conteúdo"
+                    :content post-content
                     :created_at "2018-12-06T20:16:23.423Z"
                     :updated_at "2019-06-01T20:06:21.353Z"}]}]]
         [app-views/actions-menu
@@ -75,9 +86,9 @@
          [content-views/posts-view
           {:loading? true
            :posts [{:id 1
-                    :title "Título do post"
+                    :title "Post title"
                     :submited_by "jpsoares106@gmail.com"
-                    :content "## Conteúdo"
+                    :content post-content
                     :created_at "2018-12-06T20:16:23.423Z"
                     :updated_at "2019-06-01T20:06:21.353Z"}]}]]
         [app-views/actions-menu
@@ -113,14 +124,14 @@
          {:actions (subs/actions [ui-state "author"])
           :open? true}]]]))
   {:hidden? (reagent/atom true)
-   :title (reagent/atom "Título do post")
-   :content (reagent/atom "## Conteúdo")})
+   :title (reagent/atom "Post title")
+   :content (reagent/atom post-content)})
 
 (defcard-rg reading-post
   (fn [devcard-data _]
     (let [ui-state :post_detail
           selected-post {:id 1
-                         :title "Título do post"
+                         :title "Post title"
                          :submited_by "jpsoares106@gmail.com"
                          :content @(:content @devcard-data)
                          :created_at "2018-12-06T20:16:23.423Z"
@@ -138,7 +149,7 @@
          {:actions (subs/actions [ui-state "author"])
           :open? true}]]]))
   {:hidden? (reagent/atom true)
-   :content (reagent/atom "## Conteúdo")})
+   :content (reagent/atom post-content)})
 
 (defcard-rg delete_post_confirmation
   (fn [devcard-data _]
@@ -152,9 +163,9 @@
         [app-views/main-view
          [content-views/confirm-delete-post
           {:post {:id 1
-                  :title "Título do post"
+                  :title "Post title"
                   :submited_by "jpsoares106@gmail.com"
-                  :content "## Conteúdo"
+                  :content post-content
                   :created_at "2018-12-06T20:16:23.423Z"
                   :updated_at "2019-06-01T20:06:21.353Z"}}]]
         [app-views/actions-menu
@@ -189,7 +200,7 @@
          {:actions (subs/actions [ui-state "author"])
           :open? true}]]]))
   {:hidden? (reagent/atom true)
-   :content (reagent/atom "## Conteúdo")})
+   :content (reagent/atom post-content)})
 
 (defcard-rg email_input
   (fn [devcard-data _]
@@ -302,3 +313,19 @@
      :style #js {:width 360 :height 640
                  :border "1px solid #00000038"}}
     (map-indexed #(with-meta %2 {:key %1}) children)]])
+
+(def post-content
+  "## Content
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur ultrices quis ante sed egestas. Phasellus eget ligula eu turpis elementum consectetur. Mauris ipsum tortor, porta ac hendrerit vitae, fermentum ut ligula. Quisque dignissim imperdiet lorem, tempus bibendum nibh euismod dignissim. Donec mattis, diam quis dictum tristique, velit tellus elementum dui, nec aliquam ligula nisi fringilla risus. Maecenas interdum pulvinar odio. Pellentesque gravida ullamcorper ornare. Mauris vel purus venenatis, tristique felis at, venenatis dui.
+
+Nullam rutrum, nulla nec feugiat placerat, nulla mi interdum enim, id faucibus libero velit in dui. Suspendisse gravida ex ac libero malesuada, at semper ante rhoncus. Ut cursus laoreet magna, ut lacinia arcu lacinia sit amet. Quisque arcu odio, elementum volutpat massa ut, gravida dictum lectus. Nunc nec sapien nec neque eleifend vehicula. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Mauris sagittis id augue nec aliquam. Proin sollicitudin porttitor vehicula.
+
+### Curabitur rhoncus
+
+Curabitur [rhoncus congue](x) diam, vitae sollicitudin urna ultricies eu. In efficitur justo eget sapien tempus, sed vehicula elit pharetra. Maecenas eu orci vel odio dapibus volutpat. Nulla auctor hendrerit est aliquam mattis. Sed sollicitudin turpis risus. Fusce tortor lacus, tincidunt a luctus ac, luctus eu libero. Curabitur tempor ante eget tortor ullamcorper lobortis. Curabitur sagittis, arcu ac malesuada efficitur, ipsum mauris malesuada dui, vitae malesuada nisi metus vel neque. Vivamus urna enim, vestibulum mattis fringilla vel, porta non odio. Etiam sed blandit massa. In tincidunt risus arcu, nec malesuada mauris interdum vel. Nam auctor sit amet diam id aliquet. Quisque sodales dignissim consectetur.
+
+- In efficitur justo
+- Maecenas eu orci vel
+
+Curabitur scelerisque mollis viverra. Mauris feugiat tellus tellus, ut venenatis lacus tristique non. Vivamus a turpis ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nunc scelerisque, purus a efficitur tempor, nibh erat porttitor velit, eget efficitur augue mauris at leo. Pellentesque semper, augue quis malesuada varius, sem sapien pellentesque magna, at ornare diam felis id nisi. Fusce in egestas odio. In massa ligula, auctor sit amet mi a, scelerisque auctor leo. Morbi at justo luctus, sodales felis a, aliquam eros.")

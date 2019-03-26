@@ -23,7 +23,7 @@ class AuthenticateUser
       {auth_token: JsonWebToken.encode(user_id: user.id),
        user: user}
     else
-      raise(ExceptionHandler::UnauthorizedRequest, 'Credenciais inválidas')
+      raise(ExceptionHandler::UnauthorizedRequest, 'Invalid credentials')
     end
   end
 

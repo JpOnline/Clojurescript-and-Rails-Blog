@@ -56,8 +56,8 @@
         (next-state ev))))
 
 (defn create-new-post-local [db]
-  (update-in db [:domain :posts] conj {:title "Título"
-                                       :content "## Conteúdo"
+  (update-in db [:domain :posts] conj {:title "Title"
+                                       :content "## Content"
                                        :created_at "0000-00-00"
                                        :updated_at "0000-00-00T00:00:00.000Z"}))
 

@@ -128,8 +128,8 @@
                (events/next-state db [:post-created])
                [:ui :state]))
           "It should transit to the editing_post state.")
-      (is (= [{:title "Título",
-               :content "## Conteúdo"
+      (is (= [{:title "Title",
+               :content "## Content"
                :created_at "0000-00-00",
                :updated_at "0000-00-00T00:00:00.000Z"}]
              (get-in (events/create-new-post-local db) [:domain :posts]))

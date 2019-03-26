@@ -70,8 +70,7 @@
                    :dark "#000000",
                    :contrastText "#fff"}
               :secondary
-              #js {
-                   :light "#ffea5b",
+              #js {:light "#ffea5b",
                    :main "#fcb823",
                    :dark "#c48800",
                    :contrastText "#000"}}}))
@@ -130,7 +129,7 @@
                 :justifyContent "space-between"}}
    [:div.error-message {:style #js {:color "red"
                                     :padding "5px 15px 15px 15px"}}
-    [:h3 "Erro ao comunicar com a nuvem"]
+    [:h3 "Problems talking to the cloud"]
     (map-indexed (fn [i c] ^{:key i} c) children)]
    [:> material/IconButton
     {:style #js {:alignSelf "flex-start"

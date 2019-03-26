@@ -28,7 +28,7 @@
       :delete_post_confirmation [confirm-delete-post {:post @selected-post}]
       :email_input [email-input-view]
       :passcode_input [passcode-input-view]
-      [:h2 "Sem conteúdo pro estado " @state])))
+      [:h2 "No content for this state" @state])))
 
 (declare posts-list)
 (declare no-post)
@@ -54,10 +54,10 @@
         posts)])
 
 (defn loading-posts []
-  [:h2 {:style #js {:textAlign "center" :color "gray"}} "Carregando posts..."])
+  [:h2 {:style #js {:textAlign "center" :color "gray"}} "Loading posts..."])
 
 (defn no-post []
-  [:h3 {:style #js {:textAlign "center" :color "gray"}} "Nenhum post :("])
+  [:h3 {:style #js {:textAlign "center" :color "gray"}} "No post :("])
 
 (defn post-view-mode [{:keys [post]}]
   [:<>
@@ -102,7 +102,9 @@
                    :color "inherit"}
        :value (post :content)
        :onChange on-content-change-fn
-       :multiline true}]
+       :multiline true
+       :rowsMax "10"
+       }]
      [:br] [:br] [:br]
      [post-view-mode {:post post}]]))
 
@@ -111,13 +113,13 @@
 (defn confirm-delete-post [{:keys [post]}]
   [:<>
    [:p
-    "Tem certeza que quer excluir o post "
+    "Are you sure you want to delete the post "
     [:span {:style #js {:fontWeight "bold"}}
      (post :title)]
     "?"]
    [confirmation-buttons
-    {:yes-action {:name "Excluir" :event [:deleted-post (post :id)]}
-     :no-action {:name "Mudei de ideia" :event [:cancel]}}]])
+    {:yes-action {:name "Delete" :event [:deleted-post (post :id)]}
+     :no-action {:name "I changed my mind" :event [:cancel]}}]])
 
 (defn confirmation-buttons [{:keys [yes-action no-action]}]
   [:div.confirmation-buttons-container
@@ -152,14 +154,14 @@
                   :maxWidth "315px"
                   :margin "auto"}}
      [:h1 {:style #js {:margin "15px 0 -5px 0"}}
-      "Insira seu email"]
+      "Enter your email"]
      [:p {:style #js {:color "gray"}}
-      "Você receberá um código de verificação."]
+      "You'll receive a verification code."]
      [:> material/Input
       {:value email
        :onChange #(re-frame/dispatch
                     [::events/email-input-changed (-> % .-target .-value)])
-       :placeholder "exemplo@dominio.com"
+       :placeholder "example@dominio.com"
        :style #js {:margin "15px 0"}}]
      [:> material/Fab
       {:color "secondary"
@@ -176,9 +178,9 @@
                   :maxWidth "315px"
                   :margin "auto"}}
      [:h1 {:style #js {:margin "15px 0 -5px 0"}}
-      "Código de verificação"]
+      "Verirication Code"]
      [:p {:style #js {:color "gray"}}
-      "Insira o código que te enviei por email."]
+      "Enter the code sent by email."]
      [:> material/Input
       {:value passcode
        :onChange #(re-frame/dispatch

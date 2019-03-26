@@ -4,11 +4,6 @@
     [frontend.events :as events]))
 
 ;; Please, be aware that db in re-frame's context means the state of the app.
-
-(re-frame/reg-sub
- ::name
- (fn [db] (:name db)))
-
 (re-frame/reg-sub
   ::posts
   (fn [db] (get-in db [:domain :posts])))
@@ -33,16 +28,16 @@
   [[state user-role]]
   (let [does-not-matter user-role]
     (case [state user-role]
-      [:initial "author"] [{:name "Novo Post" :event :post-created}
+      [:initial "author"] [{:name "New Post" :event :post-created}
                           {:name "Logout" :event :clicked-logout}]
       [:initial nil] [{:name "Login" :event :clicked-login}]
       [:initial "reader"] [{:name "Logout" :event :clicked-logout}]
       [:editing_post "author"] [{:name "Ok" :event :ok}
-                               {:name "Excluir Post" :event :clicked-delete-post}]
-      [:post_detail "author"] [{:name "Editar" :event :editing-post}
-                              {:name "Excluir Post" :event :clicked-delete-post}
-                              {:name "Voltar" :event :went-back}]
-      [:post_detail does-not-matter] [{:name "Voltar" :event :went-back}]
+                               {:name "Delete Post" :event :clicked-delete-post}]
+      [:post_detail "author"] [{:name "Edit" :event :editing-post}
+                              {:name "Delete Post" :event :clicked-delete-post}
+                              {:name "Back" :event :went-back}]
+      [:post_detail does-not-matter] [{:name "Back" :event :went-back}]
       [])))
 (re-frame/reg-sub
   ::actions
@@ -79,13 +74,13 @@
 (defn top-bar-title
   [[state selected-post]]
   (case state
-    :initial "Blog da SmartFit"
+    :initial "Blog"
     :post_detail (selected-post :title)
     :editing_post (selected-post :title)
-    :delete_post_confirmation "Tem Certeza?"
-    :email_input "Autenticação"
-    :passcode_input "Autenticação"
-    "??"))
+    :delete_post_confirmation "Are you sure??"
+    :email_input "Authentication"
+    :passcode_input "Authentication"
+    "No title for this screen :("))
 (re-frame/reg-sub
   ::top-bar-title
   :<- [::state]
