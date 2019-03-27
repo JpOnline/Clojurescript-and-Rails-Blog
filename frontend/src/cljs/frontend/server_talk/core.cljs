@@ -15,12 +15,8 @@
   (request-to-server {:http-verb http/get
                       :path "/posts"
                       :success-callback
-                      (fn [response]
-                        ;; Delay the response to simulate a real server
-                        (js/setTimeout
-                          #(re-frame/dispatch
-                             [callback-event (:body response)])
-                          5000))}))
+                      #(re-frame/dispatch
+                         [callback-event (:body %)])}))
 
 (defn create-post
   "It sends an http POST request to the server to create a post,
@@ -31,12 +27,8 @@
                       :json-params post
                       :auth-token auth-token
                       :success-callback
-                      (fn [response]
-                        ;; Delay the response to simulate a real server
-                        (js/setTimeout
-                          #(re-frame/dispatch
-                             [callback-event (:body response) post-index])
-                          5000))}))
+                      #(re-frame/dispatch
+                         [callback-event (:body %) post-index])}))
 
 (defn update-post
   "It sends an http PUT request to the server to update a post."
