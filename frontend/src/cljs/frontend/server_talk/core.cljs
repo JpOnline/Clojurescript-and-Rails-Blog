@@ -82,7 +82,8 @@
                               [:frontend.events/received-error-from-server
                                (-> % :body :message)])
             response (<! (http-verb
-                           (str "http://localhost:3000" path)
+                           ;; (str "http://localhost:3000" path)
+                           (str "https://mysterious-badlands-23149.herokuapp.com" path)
                            (merge {:with-credentials? false}
                                   (when auth-token {:headers {"Authorization" auth-token}})
                                   (when json-params {:json-params json-params}))))]
