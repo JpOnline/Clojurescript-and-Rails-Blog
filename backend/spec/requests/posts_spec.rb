@@ -90,7 +90,8 @@ RSpec.describe 'Blog Posts API.', type: :request do
         post '/auth/login', params: {email: 'jpsoares106@gmail.com',
                                      passcode: user_passcode}
         post '/posts', params: post_attributes,
-                       headers: {"Authorization" => json['auth_token']}}
+                       headers: {"Authorization" => json['auth_token']}
+      }
 
       it 'When PUT /posts/1 is called changing title,
           it should send an error message saying only authors can update posts' do
@@ -107,28 +108,32 @@ RSpec.describe 'Blog Posts API.', type: :request do
                                      passcode: user_passcode}
         @auth_token = json['auth_token']
         post '/posts', params: post_attributes,
-                       headers: {"Authorization" => @auth_token}}
+                       headers: {"Authorization" => @auth_token}
+      }
 
       it 'When PUT /posts/1 is called changing the post,
           it should retrieve a post with "Novo título" in its title' do
-        put '/posts/1', params: {title: 'Novo título'},
-                        headers: {"Authorization" => @auth_token}
+        post_id = json['id'].to_s
+        put '/posts/' + post_id, params: {title: 'Novo título'},
+                                 headers: {"Authorization" => @auth_token}
         get '/posts'
 
         expect(json.first['title']).to eq('Novo título')
       end
 
       it 'should retrieve a post with "## Subtítulo" in its content.' do
-        put '/posts/1', params: {content: '## Subtítulo'},
-                        headers: {"Authorization" => @auth_token}
+        post_id = json['id'].to_s
+        put '/posts/' + post_id, params: {content: '## Subtítulo'},
+                                 headers: {"Authorization" => @auth_token}
         get '/posts'
 
         expect(json.first['content']).to eq('## Subtítulo')
       end
 
       it 'should throw error when title is empty' do
-        put '/posts/1', params: {title: ''},
-                        headers: {"Authorization" => @auth_token}
+        post_id = json['id'].to_s
+        put '/posts/' + post_id, params: {title: ''},
+                                 headers: {"Authorization" => @auth_token}
 
         expect(response.body).to match(/Title can't be blank/)
       end
@@ -151,13 +156,15 @@ RSpec.describe 'Blog Posts API.', type: :request do
                        headers: {"Authorization" => @auth_token}}
 
       it 'When a not logged user calls DELETE /posts/1' do
-        delete '/posts/1'
+        post_id = json['id'].to_s
+        delete '/posts/' + post_id
 
         expect(response.body).to match(/Only authors can delete post/)
       end
 
       it 'When an author user calls DELETE /posts/1' do
-        delete '/posts/1', headers: {"Authorization" => @auth_token}
+        post_id = json['id'].to_s
+        delete '/posts/' + post_id, headers: {"Authorization" => @auth_token}
         get '/posts'
 
         expect(json).to be_empty
