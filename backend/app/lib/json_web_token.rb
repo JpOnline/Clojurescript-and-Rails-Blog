@@ -1,5 +1,7 @@
 class JsonWebToken
-  HMAC_SECRET = Rails.application.credentials.secret_key_base
+  # TODO: make credentials secret to work
+  # HMAC_SECRET = Rails.application.credentials.secret_key_base
+  HMAC_SECRET = '8654466f85f6137e3859454817b1bec5'
 
   def self.encode(payload, exp = 24.hours.from_now)
     puts 'JsonWebToken encode'
