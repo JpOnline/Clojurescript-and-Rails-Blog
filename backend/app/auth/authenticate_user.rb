@@ -17,12 +17,23 @@ class AuthenticateUser
   end
 
   def self.login(email, passcode)
+    puts 'AuthenticateUser login entering'
+    puts email
+    puts passcode
+
     user = User.find_by(email: email)
 
+    puts 'AuthenticateUser login after find user by email'
+    puts user.inspect.to_yaml
+
     if user && user.authenticate(passcode)
+      puts 'AuthenticateUser login in authenticate if'
+
       {auth_token: JsonWebToken.encode(user_id: user.id),
        user: user}
     else
+      puts 'AuthenticateUser login in authenticate else'
+
       raise(ExceptionHandler::UnauthorizedRequest, 'Invalid credentials')
     end
   end

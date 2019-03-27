@@ -17,9 +17,16 @@ class AuthenticationController < ApplicationController
   end
 
   def authenticate
+    puts 'AuthenticationController authenticate entering'
+
     token_and_user = AuthenticateUser
       .login(auth_params[:email], auth_params[:passcode])
+
+    puts 'AuthenticationController authenticate after login'
+
     user_role = AuthenticateUser.user_role(token_and_user[:user])
+
+    puts 'AuthenticationController authenticate after user_role'
 
     json_response({auth_token: token_and_user[:auth_token],
                    user: token_and_user[:user],
