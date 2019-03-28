@@ -5,6 +5,8 @@
     [frontend.events :as events]
     [frontend.views-prototypes]))
 
+(devcards/start-devcard-ui!)
+
 (defcard tests-doc
   (str "# Tests
 
