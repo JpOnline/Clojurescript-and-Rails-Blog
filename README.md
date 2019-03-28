@@ -7,6 +7,8 @@ This project concists of a mobile first design, a backend server developed in Ru
 on Rails exposing an API for a frontend client in a Single Page Application (SPA)
 style using Clojurescript on [Re-frame](https://github.com/Day8/re-frame).
 
+You can check it in https://jponline.github.io/Clojurescript-and-Rails-Blog/ and its devcards in https://jponline.github.io/Clojurescript-and-Rails-Blog/cards
+
 ## Running
 
 To run the server you'll need to have [Rails installed](https://guides.rubyonrails.org/getting_started.html#installing-rails)
