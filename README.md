@@ -60,5 +60,5 @@ of the app context. There's also tests using the **Humble View** strategy,
 isolating the views models verifying that the **events** change the model as
 expected. These tests can be verified in
 
-- http://localhost:3449/cards.html#!/frontend.views_prototypes e;
+- http://localhost:3449/cards.html#!/frontend.views_prototypes and;
 - http://localhost:3449/cards.html#!/frontend.events_tests
