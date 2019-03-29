@@ -1,0 +1,21 @@
+{
+  "name": "Clojurescript and Rails Blog",
+  "short_name": "Blog",
+  "start_url": "/Clojurescript-and-Rails-Blog",
+  "display": "minimal-ui",
+  "theme_color": "#fcb823",
+  "background_color": "#46484b",
+  "icons": [
+    {
+      "src": "icons/Green_cogwheel_m_192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/Green_cogwheel_m_512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+
