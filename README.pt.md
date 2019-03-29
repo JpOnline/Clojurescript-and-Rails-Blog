@@ -9,6 +9,8 @@ on Rails que expõe uma API e um cliente (frontend) que consome essa API no esti
 Single Page Application (SPA) utilizando Clojurescript on
 [Re-frame](https://github.com/Day8/re-frame).
 
+Você pode ver o app em https://jponline.github.io/Clojurescript-and-Rails-Blog e seus devcards em https://jponline.github.io/Clojurescript-and-Rails-Blog/cards
+
 ## Rodando o App
 
 Para rodar o servidor é preciso ter o [Rails instalado](https://guides.rubyonrails.org/getting_started.html#installing-rails)
