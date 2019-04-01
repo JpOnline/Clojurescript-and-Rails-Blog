@@ -3,11 +3,7 @@
 
 # Blog em Clojurescript e Rails
 
-Esse projeto é parte do processo de contratação da Bio Ritmo. Ele foi projeto com
-um design *mobile first*, consiste em um servidor (backend) desenvolvido em Ruby
-on Rails que expõe uma API e um cliente (frontend) que consome essa API no estilo
-Single Page Application (SPA) utilizando Clojurescript on
-[Re-frame](https://github.com/Day8/re-frame).
+Esse é um projeto que utiliza Ruby on Rails no backend e Clojurescript on [Re-frame](https://github.com/Day8/re-frame) no frontend. Ele possui um design *mobile first* no estilo [PWA](https://developers.google.com/web/progressive-web-apps/) (Progressive Web Application)
 
 Você pode ver o app em https://jponline.github.io/Clojurescript-and-Rails-Blog e seus devcards em https://jponline.github.io/Clojurescript-and-Rails-Blog/cards
 
