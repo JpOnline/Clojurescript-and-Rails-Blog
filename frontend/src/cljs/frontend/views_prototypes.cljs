@@ -235,11 +235,11 @@
   {:hidden? (reagent/atom true)})
 
 (defcard initial-state-machine-doc
-  (str "## Máquinas de Estado Finito
+  (str "## Finite State Machines
 
-       Definir máquinas de estado ajuda a manter a consistência do estado de diferentes
-       componentes quando mais de um componente é atualizado num evento. A ideia veio
-       do Jeb Beich e é descrita em 2 posts dele.
+        Finite state machines help to keep the consistence of different components
+       when more than one component is updated in an event. The idea came from Jeb
+       Beich and is described in 2 of his posts.
 
        - [Restate your ui using state machines](http://blog.cognitect.com/blog/2017/5/22/restate-your-ui-using-state-machines-to-simplify-user-interface-development)
        - [Restate your ui using state machines and re-frame](http://blog.cognitect.com/blog/2017/8/14/restate-your-ui-creating-a-user-interface-with-re-frame-and-state-machines)")
