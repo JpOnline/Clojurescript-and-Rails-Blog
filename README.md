@@ -3,9 +3,7 @@
 
 # Clojurescript and Rails Blog
 
-This project concists of a mobile first design, a backend server developed in Ruby
-on Rails exposing an API for a frontend client in a Single Page Application (SPA)
-style using Clojurescript on [Re-frame](https://github.com/Day8/re-frame).
+This is a project using Ruby on Rails in the backend and Clojurescript on [Re-frame](https://github.com/Day8/re-frame) in the frontend. It has a mobile first design in a [PWA](https://developers.google.com/web/progressive-web-apps/) style.
 
 You can check it in https://jponline.github.io/Clojurescript-and-Rails-Blog/ and its devcards in https://jponline.github.io/Clojurescript-and-Rails-Blog/cards
 
